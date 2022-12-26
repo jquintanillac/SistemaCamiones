@@ -1,0 +1,424 @@
+﻿@using Driver.Helpers;
+@using System.Security.Claims;
+@using System.Security.Principal;
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Gestion de Flotas</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="~/RoyalUI-Admin-master/vendors/ti-icons/css/themify-icons.css">
+    <link rel="stylesheet" href="~/RoyalUI-Admin-master/vendors/base/vendor.bundle.base.css">
+    <link href="~/lib/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- endinject -->
+    <!-- plugin css for this page -->
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="~/RoyalUI-Admin-master/css/style.css">
+    <!-- endinject -->
+    <link rel="shortcut icon" href="~/RoyalUI-Admin-master/images/favicon.png" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container-scroller">
+        <!-- partial:partials/_navbar.html -->
+        <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+            <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+                <a class="navbar-brand brand-logo mr-5" href="index.html"><img src="~/RoyalUI-Admin-master/images/logo.png" class="mr-2" alt="logo" /></a>
+                <a class="navbar-brand brand-logo-mini" href="index.html"><img src="~/RoyalUI-Admin-master/images/logo-mini.png" alt="logo" /></a>
+            </div>
+            <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+                <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+                    <span class="ti-view-list"></span>
+                </button>
+                <ul class="navbar-nav navbar-nav-right">
+                    <li class="nav-item nav-profile dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
+                            <img src="~/RoyalUI-Admin-master/images/faces/face29.png" alt="profile" />
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
+                            <a class="dropdown-item">
+                                Usuario: @SessionHelper.GetNameIdentifier(User)
+                            </a>
+                            <a class="dropdown-item">
+                                Nombre: @SessionHelper.GetName(User)
+                            </a>
+                            <a class="dropdown-item" asp-controller="Home" asp-action="Logout">
+                                Cerrar Sesion
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+                <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+                    <span class="ti-view-list"></span>
+                </button>
+            </div>
+        </nav>
+        <!-- partial -->
+        <div class="container-fluid page-body-wrapper">
+            <!-- partial:partials/_sidebar.html -->
+            <nav class="sidebar sidebar-offcanvas" id="sidebar">
+                <ul class="nav">
+                    @if (SessionHelper.GetValue(User, "menu1") == "S")
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="collapse" href="#admin" aria-expanded="false" aria-controls="ui-basic">
+                                <i class="ti-shield menu-icon"></i>
+                                <span class="menu-title">Administracion</span>
+                                <i class="menu-arrow"></i>
+                            </a>
+                            <div class="collapse" id="admin">
+                                <ul class="nav flex-column sub-menu">
+                                    @if (SessionHelper.GetValue(User, "submenu1_1") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDUsuarioView" asp-action="Index">Usuarios</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu1_2") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDRolView" asp-action="Index">Roles</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu1_3") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDRoluserView" asp-action="Index">Rol usuarios</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu1_4") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDMenuView" asp-action="Index">Menu</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu1_5") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDSubmenuView" asp-action="Index">Submenu</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu1_6") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDRolperView" asp-action="Index">Rol Permisos</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu1_7") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDtipdocView" asp-action="Index">Tipo Documento</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu1_8") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDUbigeoView" asp-action="Index">Ubigeo</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu1_9") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDGrifoview" asp-action="Index">Grifo</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu1_10") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDMarcaView" asp-action="Index">Marca</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu1_11") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDModeloView" asp-action="Index">Modelo</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu1_12") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDTipo_camionView" asp-action="Index">Tipo camion</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu1_13") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDTipo_SemiremolqueView" asp-action="Index">Tipo Semiremolque</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu1_14") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDCondicion_ContractualView" asp-action="Index">Condicion Contractual</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu1_15") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDEspecialidadView" asp-action="Index">Especialidad</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu1_16") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDGeneralesView" asp-action="Index">Datos Generales</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu1_17") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDTipo_empleView" asp-action="Index">Tipo Empleado</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu1_18") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDTipo_licenciaView" asp-action="Index">Tipo Licencia</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu1_19") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDTipo_servicioView" asp-action="Index">Estados Viaje</a></li>
+                                    }
+                                </ul>
+                            </div>
+                        </li>
+                    }
+                    @if (SessionHelper.GetValue(User, "menu2") == "S")
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="collapse" href="#planificacion" aria-expanded="false" aria-controls="ui-basic">
+                                <i class="ti-settings menu-icon"></i>
+                                <span class="menu-title">Planificacion</span>
+                                <i class="menu-arrow"></i>
+                            </a>
+                            <div class="collapse" id="planificacion">
+                                <ul class="nav flex-column sub-menu">
+                                    @if (SessionHelper.GetValue(User, "submenu2_1") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDEstadoView" asp-action="Index">Estados</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu2_3") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDCargaView" asp-action="Index">Carga</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu2_4") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDChoferView" asp-action="Index">Chofer</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu2_5") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDVehiculoView" asp-action="Index">Vehiculo</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu2_6") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDDocucabeView" asp-action="Chofer">Documentos Chofer</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu2_10") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDDocucabeView" asp-action="Vehiculo">Documentos Vehiculo</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu2_7") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDProcesoView" asp-action="Index">Procesos</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu2_8") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDProceso_EstadoView" asp-action="Index">Proceso estado</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu2_9") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDProceso_VehiculoView" asp-action="Index">Procesos vehiculo</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu2_11") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDProductoView" asp-action="Index">Producto</a></li>
+                                    }
+                                </ul>
+                            </div>
+                        </li>
+                    }
+                    @if (SessionHelper.GetValue(User, "menu3") == "S")
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="collapse" href="#operacion" aria-expanded="false" aria-controls="ui-basic">
+                                <i class="ti-truck menu-icon"></i>
+                                <span class="menu-title">Operaciones</span>
+                                <i class="menu-arrow"></i>
+                            </a>
+                            <div class="collapse" id="operacion">
+                                <ul class="nav flex-column sub-menu">
+                                    @if (SessionHelper.GetValue(User, "submenu3_1") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDServcabView" asp-action="Index">Viajes</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu3_2") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDCombustibleView" asp-action="Index">Combustible</a></li>
+                                    }
+                                </ul>
+                            </div>
+                        </li>
+                    }
+                    @if (SessionHelper.GetValue(User, "menu4") == "S")
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="collapse" href="#logistica" aria-expanded="false" aria-controls="ui-basic">
+                                <i class="ti-harddrives menu-icon"></i>
+                                <span class="menu-title">Logistica</span>
+                                <i class="menu-arrow"></i>
+                            </a>
+                            <div class="collapse" id="logistica">
+                                <ul class="nav flex-column sub-menu">
+                                    @if (SessionHelper.GetValue(User, "submenu4_1") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDProveedorView" asp-action="Index">Proveedor</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu4_2") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDClienteView" asp-action="Index">Cliente</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu4_3") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDRepuestoView" asp-action="Index">Compras</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu4_4") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDInventarioView" asp-action="Index">Inventarios</a></li>
+                                    }
+                                </ul>
+                            </div>
+                        </li>
+                    }
+                    @if (SessionHelper.GetValue(User, "menu5") == "S")
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="collapse" href="#mantenimiento" aria-expanded="false" aria-controls="ui-basic">
+                                <i class="ti-dashboard menu-icon"></i>
+                                <span class="menu-title">Mantenimiento</span>
+                                <i class="menu-arrow"></i>
+                            </a>
+                            <div class="collapse" id="mantenimiento">
+                                <ul class="nav flex-column sub-menu">
+                                    @if (SessionHelper.GetValue(User, "submenu5_1") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDRespcamiView" asp-action="Index">Mantenimiento camion</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu5_2") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDMantpredView" asp-action="Index">Mantenimiento predictivo</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu5_3") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDRepuestos_TercerosView" asp-action="Index">Mantenimiento Terceros</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu5_4") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDRespcamiView" asp-action="Fulleventos">Mantenimiento Calendario</a></li>
+                                    }
+                                </ul>
+                            </div>
+                        </li>
+                    }
+                    @if (SessionHelper.GetValue(User, "menu6") == "S")
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="collapse" href="#tesoreria" aria-expanded="false" aria-controls="ui-basic">
+                                <i class="ti-write menu-icon"></i>
+                                <span class="menu-title">Tesoreria</span>
+                                <i class="menu-arrow"></i>
+                            </a>
+                            <div class="collapse" id="tesoreria">
+                                <ul class="nav flex-column sub-menu">
+                                    @if (SessionHelper.GetValue(User, "submenu6_1") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDTransportistaView" asp-action="Index">Transportista</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu6_2") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDViatcabView" asp-action="Index">Viaticos</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu6_3") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDLiquidacionView" asp-action="Index">Liquidacion</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu6_4") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDFaccabView" asp-action="Index">Facturacion</a></li>
+                                    }
+                                </ul>
+                            </div>
+                        </li>
+                    }
+                    @if (SessionHelper.GetValue(User, "menu7") == "S")
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="collapse" href="#reportes" aria-expanded="false" aria-controls="ui-basic">
+                                <i class="ti-bar-chart-alt menu-icon"></i>
+                                <span class="menu-title">Reportes</span>
+                                <i class="menu-arrow"></i>
+                            </a>
+                            <div class="collapse" id="reportes">
+                                <ul class="nav flex-column sub-menu">
+                                    @if (SessionHelper.GetValue(User, "submenu7_1") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDReportesView" asp-action="rptKardexFisico">Kardex Fisico</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu7_2") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDReportesView" asp-action="rptKardexvalorizado">Kardex Valorizado</a></li>
+                                    }
+                                 @*   @if (SessionHelper.GetValue(User, "submenu7_3") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="#" asp-action="Index">Choferes</a></li>
+                                    }*@
+                                    @if (SessionHelper.GetValue(User, "submenu7_4") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDReportesView" asp-action="rptServxcamion">Servicios por Camiones</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu7_5") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="MDReportesView" asp-action="rptServxciudad">Servicios por ciudad</a></li>
+                                    }
+                                  @*  @if (SessionHelper.GetValue(User, "submenu7_6") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="#" asp-action="Index">Proveedores</a></li>
+                                    }
+                                    @if (SessionHelper.GetValue(User, "submenu7_7") == "S")
+                                    {
+                                        <li class="nav-item"> <a class="nav-link" asp-controller="#" asp-action="Index">Clientes</a></li>
+                                    }*@
+                                </ul>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </nav>
+            <!-- partial -->
+            <div class="main-panel">
+                <div class="container">
+                    <main role="main" class="pb-3">
+                        @RenderBody()
+                    </main>
+                </div>
+
+            </div>
+
+            <div class="modal" tabindex="-1" id="form-modal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title"></h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- main-panel ends -->
+        </div>
+        <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <!-- plugins:js -->
+    <script src="~/RoyalUI-Admin-master/vendors/base/vendor.bundle.base.js"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page-->
+    <script src="~/RoyalUI-Admin-master/vendors/chart.js/Chart.min.js"></script>
+    <!-- End plugin js for this page-->
+    <!-- inject:js -->
+    <script src="~/RoyalUI-Admin-master/js/off-canvas.js"></script>
+    <script src="~/RoyalUI-Admin-master/js/hoverable-collapse.js"></script>
+    <script src="~/RoyalUI-Admin-master/js/template.js"></script>
+    <script src="~/RoyalUI-Admin-master/js/todolist.js"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page-->
+    <script src="~/RoyalUI-Admin-master/js/dashboard.js"></script>
+    <!-- End custom js for this page-->
+    @* <script src="~/lib/jquery/dist/jquery.min.js"></script>*@
+    @*<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>*@
+    <script src="~/lib/twitter-bootstrap/js/bootstrap.bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>
+

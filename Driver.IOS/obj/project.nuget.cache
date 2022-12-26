@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "MGFZNBWXJmGsypWkrxELhCu4kWcqAjhotKHjfJZMz6XP5/WLGPnpWyK0mM0X67bsnw8d0zK0e/7h7cQPgy5iCg==",
+  "success": true,
+  "projectFilePath": "D:\\Proyectos Personales\\Camiones\\Driver\\Driver.IOS\\Driver.IOS.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\jquintanillac\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512",
+    "C:\\Users\\jquintanillac\\.nuget\\packages\\xamarin.essentials\\1.6.1\\xamarin.essentials.1.6.1.nupkg.sha512"
+  ],
+  "logs": []
+}

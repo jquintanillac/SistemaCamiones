@@ -1,0 +1,233 @@
+﻿
+@{
+	ViewData["Title"] = "Documentos Detalles";
+	 Layout="~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+
+<br />
+<div class="container-fluid">
+	<div class="card">
+		<div class="card-header">
+			 <div class="div-title">
+				<h3 class="text-center">DOCUMENTOS</h3>
+			 </div>
+			 <hr />
+			 <br />		
+			 <h4>@ViewData["nombre"]</h4>
+			 <div class="container-fluid">  
+				 <div class="row">
+					 <input type="hidden" id="id_docdet" value=""  />
+					 <input type="hidden" id="id_doccab" value="@ViewData["id_doccab"]"  />					 
+					 <div class="form-group col">
+						<label class="control-label">(*) Tipo documento: </label>
+						<select class="form-control" id="id_tipdoc" asp-items="@(new SelectList(ViewBag.tipdoc, "id_tipdoc", "tipdoc_desc"))">
+                            <option>Seleccione documento</option>
+                        </select>					
+					</div>
+				 </div>
+				 <div class="row">
+                    <div class="form-group col">
+                        <label class="control-label">(*) Fecha emision: </label>
+                        <input id="docdet_fecemi" type="date" class="form-control" />
+                    </div>
+                    <div class="form-group col">
+                        <label class="control-label">(*) Fecha vencimiento: </label>
+                        <input id="docdet_venci" type="date" class="form-control" />
+                    </div>
+                </div>
+				  <div class="row">
+					<div class="form-group col">
+						<label class="control-label">(*) Ente emisor: </label>
+						<input id="docdet_entemi" placeholder="Ente emisor" class="form-control" />						
+					</div>	
+					<div class="form-group col">
+						<label class="control-label">Observacion: </label>
+						<input id="docdet_obse" placeholder="Observacion" class="form-control" />						
+					</div>										    
+				 </div>
+				 <div class="row">
+					 <div class="col-md-6">
+						<button id="btnsave" class="btn btn-success btn-sm">Guardar</button>
+						<button id="btnAddnew" class="btn btn-primary btn-sm">Limpiar Datos</button>	
+					</div>	
+				 </div>
+				 <br />
+                 <div class="row">
+					 <div class="col-md-6">
+						<h6><label>Campos obligatorios(*)</label></h6>
+					</div>	
+				 </div>
+			 </div>
+		</div>
+		<div class="card-body">
+			<table id="tbldocdet" class="table table-striped table-bordered" style="width: 100%">
+				<thead>
+					<tr>
+						<th class="d-none">id_docdet</th>
+						<th class="d-none">id_doccab</th>
+						<th class="d-none">id_tipdoc</th>
+						<th>Documento</th>
+						<th>Fecha Emision</th>
+						<th>Fehca Vencimiento</th>
+						<th>Ente emisor</th>
+						<th>Observacion</th>
+						<th>Estado</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$(function () {
+				$("#id_tipdoc").select2({
+
+				});	
+			});
+			//var origin = $(location).attr('origin'); 
+			//var url = origin + '/api/SVMDDocumento_Detalle/';
+			var id = $("#id_doccab").val();
+			$('#tbldocdet').DataTable({
+				"ajax": {
+				"url": "/api/SVMDDocumento_Detalle/" + id,
+				"dataSrc": ""				
+				},
+				"pageLength": 15,
+				 "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontraron registros",
+                    "info": "Mostrar pagina _PAGE_ de _PAGES_",
+                    "infoEmpty": "No se encontraron registros",
+                    "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "next": "siguiente",
+                        "previous": "Anterior"
+                    }
+				},
+                "scrollX": true,
+                "responsive": true,								
+				"columns": [
+					{ data: 'id_docdet', "visible": false },
+					{ data: 'id_doccab', "visible": false },
+					{ data: 'id_tipdoc', "visible": false },
+					{ data: 'tipdoc_desc' },
+					{ data: 'docdet_fecemi' },
+					{ data: 'docdet_venci' },
+					{ data: 'docdet_entemi' },
+					{ data: 'docdet_obse' },
+					{ data: 'docdet_alert' },
+					{
+						data: "id", render: function (data, type, row, meta) {
+							return "<button class='btn btn-primary btn-sm' onclick='Edit(" + JSON.stringify(row) + ")'>Editar</button>" +
+								   "<button class='btn btn-danger btn-sm'  onclick='Delete(" + JSON.stringify(row) + ")'>Eliminar</button>";
+						}
+					}
+				],
+				"rowCallback": function( row, data, index ) {
+								if (data.docdet_alert == "V") {
+									$('td', row).css('background-color', 'Red');
+								}
+								else if (data.docdet_alert == "P") {
+									$('td', row).css('background-color', 'Yellow');
+								}
+								else  {
+									$('td', row).css('background-color', 'White');
+								}
+				}		   
+			});
+
+			$("#btnsave").click(function() {
+
+				var id_tipdoc = $("#id_tipdoc").val();
+				var	docdet_fecemi = $("#docdet_fecemi").val();
+				var	docdet_venci = $("#docdet_venci").val();
+				var	docdet_entemi = $("#docdet_entemi").val();
+
+				if(id_tipdoc === 'Seleccione documento' || docdet_fecemi === 'Seleccione grifo' || docdet_venci === '' || docdet_entemi === ''){
+					swal('Mensaje de advertencia', 'Complete los campos requeridos', 'error');
+				}
+                else{
+					var origin = $(location).attr('origin'); 
+					var url = origin + '/api/SVMDDocumento_Detalle';
+					var mDDocumento_Detalle = {
+						id_docdet: $.trim($("#id_docdet").val()) == "" ? 0 : $("#id_docdet").val(),  
+						id_doccab: $("#id_doccab").val(),  
+						id_tipdoc: $("#id_tipdoc").val(),
+						tipdoc_desc: "",
+						docdet_fecemi: $("#docdet_fecemi").val(),
+						docdet_venci: $("#docdet_venci").val(),
+						docdet_entemi: $("#docdet_entemi").val(),
+						docdet_obse: $("#docdet_obse").val()
+					};
+				
+					$.post(url, { mDDocumento_Detalle : mDDocumento_Detalle })
+					.done(function (data) {
+						Reset();
+						ReloadGrid();
+						swal('Mensaje de confirmacion', 'Registro Grabado', 'success');
+					});
+				}				
+			});
+
+			$("#btnAddnew").click(function(){
+				Reset();
+			});
+		});
+
+		function Edit(oDocdet) {
+			$("#id_docdet").val(oDocdet.id_docdet);
+			$("#id_doccab").val(oDocdet.id_doccab);
+			$("#id_tipdoc").val(oDocdet.id_tipdoc);			
+			$("#docdet_fecemi").val(oDocdet.docdet_fecemi);
+			$("#docdet_venci").val(oDocdet.docdet_venci);
+			$("#docdet_entemi").val(oDocdet.docdet_entemi);
+			$("#docdet_obse").val(oDocdet.docdet_obse);
+			
+		}
+
+		function Delete(oDocdet) {
+			var origin = $(location).attr('origin'); 
+			var url = origin + '/api/SVMDDocumento_Detalle/';
+			var id = oDocdet.id_docdet;		
+			$.ajax({
+				url: url + id,
+				type: "DELETE",
+				success: function(result){										 
+					 swal('Mensaje de confirmacion', 'Carga eliminada', 'success');
+					 ReloadGrid();
+				}
+			});											
+		}
+
+		function Reset() {
+			$("#id_docdet").val(0);
+			$("#id_tipdoc").val(0);			
+			$("#docdet_fecemi").val("");
+			$("#docdet_venci").val("");
+			$("#docdet_entemi").val("");
+			$("#docdet_obse").val("");
+			
+		}
+		function ReloadGrid() {
+			$("#tbldocdet").DataTable().clear();
+			$("#tbldocdet").DataTable().ajax.reload();
+		}
+
+	</script>
+}

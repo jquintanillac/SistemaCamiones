@@ -1,0 +1,185 @@
+﻿@{
+	ViewData["Title"] = "Proceso estado";
+	 Layout="~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+
+<br />
+<div class="container-fluid">
+	<div class="card">
+		<div class="card-header">
+			 <div class="div-title">
+				<h3 class="text-center">PROCESO ESTADO</h3>
+			 </div>
+			 <hr />
+			 <br />		
+			 <div class="container-fluid">  
+				 <div class="row">
+					 <input type="hidden" id="id_proest" value=""  />	
+					 <div class="form-group col">
+						<label class="control-label">(*) Proceso: </label>
+						<select class="form-control" id="id_proces" asp-items="@(new SelectList(ViewBag.proces, "id_proces", "proces_desc"))">
+                            <option>Seleccione proceso</option>
+                        </select>					
+					</div>
+					 <div class="form-group col">
+						<label class="control-label">(*) Estado: </label>
+						<select class="form-control" id="id_estad" asp-items="@(new SelectList(ViewBag.estad, "id_estad", "estad_desc"))">
+                            <option>Seleccione estado</option>
+                        </select>					
+					</div>
+				 </div>
+				 <div class="row">
+					<div class="form-group col">
+						<label class="control-label">Observacion: </label>
+						<input id="proest_obs" placeholder="Observacion" class="form-control" />						
+					</div>										    
+				 </div>	
+				 <div class="row">
+					 <div class="col-md-6">
+						<button id="btnsave" class="btn btn-success btn-sm">Guardar</button>
+						<button id="btnAddnew" class="btn btn-primary btn-sm">Limpiar Datos</button>	
+					</div>	
+				 </div>
+				 <br />
+				 <div class="row">
+					 <div class="col-md-6">
+						<h6><label>Campos obligatorios(*)</label></h6>
+					</div>	
+				 </div>
+			 </div>
+		</div>
+	<div class="card-body">
+			<table id="tblproest" class="table table-striped table-bordered" style="width: 100%">
+				<thead>
+					<tr>
+						<th class="d-none">ID</th>
+						<th>Proceso</th>
+						<th>Estado</th>
+						<th>Observacion</th>
+						<th>Accciones</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$(function () {
+				$("#id_proces").select2({
+
+				});	
+				$("#id_estad").select2({
+
+				});	
+			});
+			$('#tblproest').DataTable({
+				"ajax": {
+				"url": "/api/SVMDProceso_Estados",
+				"dataSrc": ""				
+				},
+				"pageLength": 15,
+				 "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontraron registros",
+                    "info": "Mostrar pagina _PAGE_ de _PAGES_",
+                    "infoEmpty": "No se encontraron registros",
+                    "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "next": "siguiente",
+                        "previous": "Anterior"
+                    }
+				},
+                "scrollX": true,
+                "responsive": true,								
+				"columns": [
+					{ data: 'id_proest', "visible": false },
+					{ data: 'proces_desc' },
+					{ data: 'estad_desc' },
+					{ data: 'proest_obs' },
+					{
+						data: "id", render: function (data, type, row, meta) {
+							return "<button class='btn-md btn-primary' onclick='Edit(" + JSON.stringify(row) + ")'>Editar</button>" +
+								   "<button class='btn-md btn-danger'  onclick='Delete(" + JSON.stringify(row) + ")'>Eliminar</button>";
+						}
+					}
+				]
+			});
+
+			$("#btnsave").click(function() {
+
+				var id_proces = $("#id_proces").val();
+				var	id_estad = $("#id_estad").val();
+
+				if(id_proces === 'Seleccione proceso' || id_estad === 'Seleccione estado'){
+					swal('Mensaje de advertencia', 'Complete los campos requeridos', 'error');
+				}
+                else{
+					var oProcesoest = {
+						id_proest: $.trim($("#id_proest").val()) == "" ? 0 : $("#id_proest").val(),  
+						id_proces: $("#id_proces").val(),
+						id_estad: $("#id_estad").val(),
+						proest_obs: $("#proest_obs").val()			
+					};
+				
+					$.post("api/SVMDProceso_Estados", { oProcesoest : oProcesoest })
+					.done(function (data) {
+						Reset();
+						ReloadGrid();
+						swal('Mensaje de confirmacion', 'Registro Grabado', 'success');
+					});				
+				}			
+			});
+
+			$("#btnAddnew").click(function(){
+				Reset();
+			});
+		});
+
+		function Edit(oProcesoest) {
+			$("#id_proest").val(oProcesoest.id_proest);
+			$("#id_proces").val(oProcesoest.id_proces).change();
+			$("#id_estad").val(oProcesoest.id_estad).change();
+			$("#proest_obs").val(oProcesoest.proest_obs);
+		}
+
+		function Delete(oProcesoest) {
+			var id = oProcesoest.id_proest;		
+			$.ajax({
+				url: "api/SVMDProceso_Estados/" + id,
+				type: "DELETE",
+				success: function(result){										 
+					 swal('Mensaje de confirmacion', 'Carga eliminada', 'success');
+					 ReloadGrid();
+				}
+			});											
+		}
+
+		function Reset() {
+			$("#id_proest").val(0);
+			$("#id_proces").val(0);
+			$("#id_estad").val(0);
+			$("#proest_obs").val("");
+			
+		}
+		function ReloadGrid() {
+			$("#tblproest").DataTable().clear();
+			$("#tblproest").DataTable().ajax.reload();
+		}
+
+	</script>
+}

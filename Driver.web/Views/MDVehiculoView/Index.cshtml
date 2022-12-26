@@ -1,0 +1,276 @@
+﻿@{
+    ViewData["Title"] = "Vehiculos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+
+<br />
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <div class="div-title">
+                <h3 class="text-center">VEHICULOS</h3>
+            </div>
+            <hr />
+            <br />
+            <div class="container-fluid">
+                <div class="row">
+                    <input type="hidden" id="id_vehi" value="" />
+                    <div class="form-group col">
+                        <label class="control-label">(*) Placa: </label>
+                        <input id="vehi_placa" placeholder="Placa" class="form-control" />
+                    </div>
+                    <div class="form-group col">
+                        <label class="control-label">(*) Kilometraje: </label>
+                        <input id="vehi_km" placeholder="Km" class="form-control" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col">
+                        <label class="control-label">(*) Año: </label>
+                        <input id="vehi_año" placeholder="Año" class="form-control" />
+                    </div>
+                    <div class="form-group col">
+                        <label class="control-label">(*) Tipo Vehiculo: </label>
+                        <select class="form-control" id="id_Tipcam" asp-items="@(new SelectList(ViewBag.Tipcam, "id_Tipcam", "Tipcam_desc"))">
+                            <option>Seleccione tipo</option>
+                        </select>
+                    </div>
+                </div>               
+                <div class="row">
+                    <div class="form-group col">
+                        <label class="control-label">(*) Tipo semiremolque: </label>
+                        <select class="form-control" id="id_Tipsemi" asp-items="@(new SelectList(ViewBag.Tipsemi, "id_Tipsemi", "Tipsemi_desc"))">
+                            <option>Seleccione semiremilque</option>
+                        </select>
+                    </div>
+                    <div class="form-group col">
+                        <label class="control-label">(*) Cliente: </label>
+                        <select class="form-control" id="id_cliente" asp-items="@(new SelectList(ViewBag.cliente, "id_cliente", "clie_razsocial"))">
+                            <option>Seleccione cliente</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col">
+                        <label class="control-label">(*) Modelo: </label>
+                        <select class="form-control" id="id_modelo" asp-items="@(new SelectList(ViewBag.modelo, "id_modelo", "modelo_desc"))">
+                            <option>Seleccione modelo</option>
+                        </select>
+                    </div>
+                    <div class="form-group col">
+                        <label class="control-label">(*) Marca: </label>
+                        <select class="form-control" id="id_marca" asp-items="@(new SelectList(ViewBag.marca, "id_marca", "marca_desc"))">
+                            <option>Seleccione marca</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group form-check">
+                            <input type="checkbox" class="form-check-input" id="vehi_act" checked="checked">
+                            <label class="form-check-label">Activo</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <button id="btnsave" class="btn btn-success btn-sm">Guardar</button>
+                        <button id="btnAddnew" class="btn btn-primary btn-sm">Limpiar Datos</button>
+                    </div>
+                </div>
+                 <br />
+				 <div class="row">
+					 <div class="col-md-6">
+						<h6><label>Campos obligatorios(*)</label></h6>
+					</div>	
+				 </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <table id="tblvehi" class="table table-striped table-bordered" style="width: 100%">
+                <thead>
+                    <tr>
+                        <th class="d-none">ID</th>
+                        <th>Placa</th>
+                        <th>Kilometraje</th>
+                        <th>Año</th>                       
+                        <th class="d-none">id_Tipcam</th>
+                        <th class="d-none">id_Tipsemi</th>
+                        <th class="d-none">id_cliente</th>
+                        <th class="d-none">id_modelo</th>
+                        <th class="d-none">id_marca</th>
+                        <th>Activo</th>
+                        <th>Accciones</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(function () {
+			$("#id_Tipcam").select2({
+
+			});	
+            $("#id_Tipsemi").select2({
+
+			});	
+            $("#id_cliente").select2({
+
+			});	
+            $("#id_modelo").select2({
+
+			});
+            $("#id_marca").select2({
+
+			});	
+		});
+
+        $('#tblvehi').DataTable({
+            "ajax": {
+            "url": "/api/SVMDVehiculo",
+            "dataSrc": ""
+            },
+            "pageLength": 15,
+             "language": {
+                "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                "zeroRecords": "No se encontraron registros",
+                "info": "Mostrar pagina _PAGE_ de _PAGES_",
+                "infoEmpty": "No se encontraron registros",
+                "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                "search": "Buscar:",
+                "paginate": {
+                    "next": "siguiente",
+                    "previous": "Anterior"
+                }
+            },
+            "scrollX": true,
+            "responsive": true,
+            "columns": [
+                { data: 'id_vehi', "visible": false },
+                { data: 'vehi_placa' },
+                { data: 'vehi_km' },
+                { data: 'vehi_año' },
+                { data: 'id_Tipcam', "visible": false },
+                { data: 'id_Tipsemi', "visible": false },
+                { data: 'id_cliente', "visible": false },
+                { data: 'id_modelo', "visible": false  },
+                { data: 'id_marca', "visible": false  },
+                { data: 'vehi_act',
+                    "render": function (data, type, row){
+                        if (row.vehi_act === true) { return 'Activo';	}
+                        else { return 'Inactivo'; }
+                    }
+                },
+                {
+                    data: "id", render: function (data, type, row, meta) {
+                        return "<button class='btn-md btn-primary' onclick='Edit(" + JSON.stringify(row) + ")'>Editar</button>" +
+                               "<button class='btn-md btn-danger'  onclick='Delete(" + JSON.stringify(row) + ")'>Eliminar</button>";
+                    }
+                }
+            ]
+        });
+
+        $("#btnsave").click(function() {
+
+             var vehi_placa = $("#vehi_placa").val();
+             var vehi_km = $("#vehi_km").val();
+             var vehi_año = $("#vehi_año").val();
+             var id_Tipcam = $("#id_Tipcam").val();
+             var id_Tipsemi = $("#id_Tipsemi").val();
+             var id_cliente = $("#id_cliente").val();
+             var id_modelo = $("#id_modelo").val();
+             var id_marca = $("#id_marca").val();
+
+             if(vehi_placa === '' || vehi_km === '' || vehi_año === '' || id_Tipcam === 'Seleccione tipo' || id_Tipsemi === 'Seleccione semiremilque' || id_cliente === 'Seleccione cliente' || id_modelo === 'Seleccione modelo' || id_marca === 'Seleccione marca'){
+					swal('Mensaje de advertencia', 'Complete los campos requeridos', 'error');
+			 }
+			 else{
+                 var mDVehiculo = {
+                    id_vehi: $.trim($("#id_vehi").val()) == "" ? 0 : $("#id_vehi").val(),
+                    vehi_placa: $("#vehi_placa").val(),
+                    vehi_km: $("#vehi_km").val(),
+                    vehi_año: $("#vehi_año").val(),
+                    id_Tipcam: $("#id_Tipcam").val(),
+                    id_Tipsemi: $("#id_Tipsemi").val(),
+                    id_cliente: $("#id_cliente").val(),
+                    id_modelo: $("#id_modelo").val(),
+                    id_marca: $("#id_marca").val(),
+                    vehi_act: $("#vehi_act").prop("checked") ? true : false
+                };
+
+                $.post("api/SVMDVehiculo", { mDVehiculo : mDVehiculo })
+                .done(function (data) {
+                    Reset();
+                    ReloadGrid();
+                    swal('Mensaje de confirmacion', 'Registro Grabado', 'success');
+                });
+             }            
+        });
+
+        $("#btnAddnew").click(function(){
+            Reset();
+        });
+    });
+
+    function Edit(oVehiculo) {
+        $("#id_vehi").val(oVehiculo.id_vehi);
+        $("#vehi_placa").val(oVehiculo.vehi_placa);
+        $("#vehi_km").val(oVehiculo.vehi_km);
+        $("#vehi_año").val(oVehiculo.vehi_año);
+        $("#id_Tipcam").val(oVehiculo.id_Tipcam);
+        $("#id_Tipsemi").val(oVehiculo.id_Tipsemi);
+        $("#id_cliente").val(oVehiculo.id_cliente);
+        $("#id_modelo").val(oVehiculo.id_modelo);
+        $("#id_marca").val(oVehiculo.id_marca);      
+        $("#vehi_act").val(oVehiculo.vehi_act);
+    }
+
+    function Delete(oVehiculo) {
+        var id = oVehiculo.id_vehi;
+        $.ajax({
+            url: "api/SVMDVehiculo/" + id,
+            type: "DELETE",
+            success: function(result){
+                 swal('Mensaje de confirmacion', 'Carga eliminada', 'success');
+                 ReloadGrid();
+            }
+        });
+    }
+
+    function Reset() {
+        $("#id_vehi").val(0);
+        $("#vehi_placa").val("");
+        $("#vehi_km").val("");
+        $("#vehi_año").val("");
+        $("#id_Tipcam").val("");
+        $("#id_Tipsemi").val("");
+        $("#id_cliente").val("");
+        $("#id_modelo").val("");
+        $("#id_marca").val("");      
+
+
+
+    }
+    function ReloadGrid() {
+        $("#tblvehi").DataTable().clear();
+        $("#tblvehi").DataTable().ajax.reload();
+    }
+
+</script>
+}

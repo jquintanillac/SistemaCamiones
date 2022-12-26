@@ -1,0 +1,182 @@
+﻿@{
+	ViewData["Title"] = "Rol Usuarios";
+	 Layout="~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+
+<br />
+<div class="container-fluid">
+	<div class="card">
+		<div class="card-header">
+			 <div class="div-title">
+				<h3 class="text-center">Rol Usuarios</h3>
+			 </div>
+			 <hr />
+			 <br />		
+			 <div class="container-fluid">  
+				 <div class="row">
+					 <input type="hidden" id="Idrol_usua" value=""  />				
+					<div class="form-group col">
+						<label class="control-label">(*) Usuarios: </label>
+						<select class="form-control" id="IdUsuario"  asp-items="@(new SelectList(ViewBag.user, "IdUsuario", "Usua_user"))">
+                            <option>Seleccione usuario</option>
+                        </select>			
+					</div>
+					<div class="form-group col">
+						<label class="control-label">(*) Roles: </label>
+						<select class="form-control" id="Idrol"  asp-items="@(new SelectList(ViewBag.rol, "Idrol", "rol_desc"))">
+                            <option>Seleccione rol</option>
+                        </select>		
+					</div>
+				 </div>				
+				 <div class="row">
+					 <div class="col-md-6">
+						<button id="btnsave" class="btn btn-success btn-sm">Guardar</button>
+						<button id="btnAddnew" class="btn btn-primary btn-sm">Limpiar Datos</button>		
+					</div>	
+				 </div>
+				 <br />
+				 <div class="row">
+					 <div class="col-md-6">
+						<h6><label>Campos obligatorios(*)</label></h6>
+					</div>	
+				 </div>
+			 </div>
+		</div>
+		<div class="card-body">
+			<table id="tblroluser" class="table table-striped table-bordered" style="width: 100%">
+				<thead>
+					<tr>
+						<th class="d-none">ID</th>
+						<th class="d-none">Idrol</th>
+						<th class="d-none">IdUsuario</th>
+						<th>Usuario</th>
+						<th>Rol</th>
+						<th>Accciones</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts {
+	<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$(function () {
+				$("#IdUsuario").select2({
+
+				});	
+				$("#Idrol").select2({
+
+				});	
+			});
+			$('#tblroluser').DataTable({
+				"ajax": {
+				"url": "/api/SVMDRol_Usuario",
+				"dataSrc": ""				
+				},
+				"pageLength": 15,
+				 "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontraron registros",
+                    "info": "Mostrar pagina _PAGE_ de _PAGES_",
+                    "infoEmpty": "No se encontraron registros",
+                    "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "next": "siguiente",
+                        "previous": "Anterior"
+                    }
+				},
+                "scrollX": true,
+                "responsive": true,								
+				"columns": [
+					{ data: 'Idrol_usua', "visible": false },
+					{ data: 'Idrol', "visible": false },
+					{ data: 'IdUsuario', "visible": false },
+					{ data: 'Usuario' },
+					{ data: 'Rol' },
+					{
+						data: "id", render: function (data, type, row, meta) {
+							return "<button class='btn-md btn-primary' onclick='Edit(" + JSON.stringify(row) + ")'>Editar</button>" +
+								   "<button class='btn-md btn-danger'  onclick='Delete(" + JSON.stringify(row) + ")'>Eliminar</button>";
+						}
+					}
+				]
+			});
+
+			$("#btnsave").click(function() {
+
+				var Idrol = $("#Idrol").val();
+				var	IdUsuario = $("#IdUsuario").val();
+
+				if(Idrol === 'Seleccione rol' || IdUsuario === 'Seleccione usuario'){
+					swal('Mensaje de advertencia', 'Complete los campos requeridos', 'error');
+				}
+				else{
+					var mDRol_Usuario = {
+						Idrol_usua: $.trim($("#Idrol_usua").val()) == "" ? 0 : $("#Idrol_usua").val(),  
+						Idrol: $("#Idrol").val(),
+						IdUsuario: $("#IdUsuario").val()								
+					};
+				
+					$.post("api/SVMDRol_Usuario", { mDRol_Usuario : mDRol_Usuario })
+					.done(function (data) {
+						Reset();
+						ReloadGrid();
+						swal('Mensaje de confirmacion', 'Registro Grabado', 'success');
+					});
+				}
+
+				
+			});
+
+			$("#btnAddnew").click(function(){
+				Reset();
+			});
+		});
+
+		function Edit(oRoluser) {
+			$("#Idrol_usua").val(oRoluser.Idrol_usua);
+			$("#Idrol").val(oRoluser.Idrol).change();
+			$("#IdUsuario").val(oRoluser.IdUsuario).change();	
+
+		}
+
+		function Delete(oRoluser) {
+			var id = oRoluser.Idrol_usua;		
+			$.ajax({
+				url: "api/SVMDRol_Usuario/" + id,
+				type: "DELETE",
+				success: function(result){										 
+					 swal('Mensaje de confirmacion', 'Carga eliminada', 'success');
+					 ReloadGrid();
+				}
+			});											
+		}
+
+		function Reset() {
+			$("#Idrol_usua").val(0);
+			$("#Idrol").val(0);
+			$("#IdUsuario").val(0);
+			
+		}
+		function ReloadGrid() {
+			$("#tblroluser").DataTable().clear();
+			$("#tblroluser").DataTable().ajax.reload();
+		}
+
+	</script>
+}

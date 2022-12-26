@@ -1,0 +1,224 @@
+﻿@{
+	ViewData["Title"] = "Combustible";
+	 Layout="~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+
+<br />
+<div class="container-fluid">
+	<div class="card">
+		<div class="card-header">
+			 <div class="div-title">
+				<h3 class="text-center">COMBUSTIBLE</h3>
+			 </div>
+			 <hr />
+			 <br />		
+			 <div class="container-fluid">  
+				 <div class="row">
+					 <input type="hidden" id="id_combu" value=""  />	
+					 <div class="form-group col">
+						<label class="control-label">(*) Placa: </label>
+						<select class="form-control" id="id_vehi" asp-items="@(new SelectList(ViewBag.placa, "id_vehi", "vehi_placa"))">
+                            <option>Seleccione placa</option>
+                        </select>					
+					</div>
+				    <div class="form-group col">
+						<label class="control-label">(*) Grifo: </label>
+						<select class="form-control" id="id_grifo" asp-items="@(new SelectList(ViewBag.grifo, "id_grifo", "grifo_descr"))">
+                            <option>Seleccione grifo</option>
+                        </select>					
+					</div>
+				 </div>
+				 <div class="row">					 
+					<div class="form-group col">
+						<label class="control-label">(*) Galones: </label>
+						<input id="combu_cant" type="number" class="form-control" />						
+					</div>	
+				   	<div class="form-group col">
+						<label class="control-label">(*) Precio S/.: </label>
+						<input id="combu_prec" type="number" class="form-control" />						
+					</div>	
+				 </div>
+				  <div class="row">					 
+					<div class="form-group col">
+						<label class="control-label">Observacion: </label>
+						<input id="combu_obs" type="text" class="form-control" />						
+					</div>	
+				   	<div class="form-group col">
+						<label class="control-label">(*) Fecha registro: </label>
+						<input id="combu_fecreg" type="date" class="form-control" />						
+					</div>	
+				 </div>	
+				 <div class="row">
+					 <div class="col-md-6">
+						<button id="btnsave" class="btn btn-success btn-sm">Guardar</button>
+						<button id="btnAddnew" class="btn btn-primary btn-sm">Limpiar Datos</button>	
+					</div>	
+				 </div>
+				 <br />
+                 <div class="row">
+					 <div class="col-md-6">
+						<h6><label>Campos obligatorios(*)</label></h6>
+					</div>	
+				 </div>
+			 </div>
+		</div>
+	<div class="card-body">
+			<table id="tblcomb" class="table table-striped table-bordered" style="width: 100%">
+				<thead>
+					<tr>
+						<th class="d-none">ID</th>
+						<th class="d-none">id_vehi</th>
+						<th class="d-none">id_grifo</th>
+						<th>vehi_placa</th>
+						<th>grifo_descr</th>
+						<th>combu_obs</th>
+						<th>combu_fecreg</th>
+						<th>combu_cant</th>
+						<th>combu_prec</th>
+						<th>Accciones</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			 $(function () {
+				$("#id_vehi").select2({
+
+				});	
+				$("#id_grifo").select2({
+
+				});	
+			});
+			var origin = $(location).attr('origin'); 
+			var url = origin + '/api/SVMDCombustible';
+			$('#tblcomb').DataTable({
+				"ajax": {
+				"url": "/api/SVMDCombustible",
+				"dataSrc": ""				
+				},
+				"pageLength": 15,
+				 "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontraron registros",
+                    "info": "Mostrar pagina _PAGE_ de _PAGES_",
+                    "infoEmpty": "No se encontraron registros",
+                    "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "next": "siguiente",
+                        "previous": "Anterior"
+                    }
+				},
+                "scrollX": true,
+                "responsive": true,								
+				"columns": [
+					{ data: 'id_combu', "visible": false },
+					{ data: 'id_vehi', "visible": false },
+					{ data: 'id_grifo', "visible": false },					
+					{ data: 'vehi_placa' },
+					{ data: 'grifo_descr' },
+					{ data: 'combu_obs' },
+					{ data: 'combu_fecreg' },
+					{ data: 'combu_cant' },
+					{ data: 'combu_prec' },
+					{
+						data: "id", render: function (data, type, row, meta) {
+							return "<button class='btn-md btn-primary' onclick='Edit(" + JSON.stringify(row) + ")'>Editar</button>" +
+								   "<button class='btn-md btn-danger'  onclick='Delete(" + JSON.stringify(row) + ")'>Eliminar</button>";
+						}
+					}
+				]
+			});
+
+			$("#btnsave").click(function() {
+				var id_vehi = $("#id_vehi").val();
+				var	id_grifo = $("#id_grifo").val();
+				var	combu_cant = $("#combu_cant").val();
+				var	combu_prec = $("#combu_prec").val();
+				var	combu_fecreg = $("#combu_fecreg").val();	
+
+				if(id_vehi === 'Seleccione placa' || id_grifo === 'Seleccione grifo' || combu_cant === '' || combu_prec === '' || combu_fecreg === ''){
+					swal('Mensaje de advertencia', 'Complete los campos requeridos', 'error');
+				}
+                else{
+					var origin = $(location).attr('origin'); 
+					var url = origin + '/api/SVMDCombustible';
+					var mDCombustible = {
+						id_combu: $.trim($("#id_combu").val()) == "" ? 0 : $("#id_combu").val(),  
+						id_vehi: $("#id_vehi").val(),
+						id_grifo: $("#id_grifo").val(),
+						combu_cant: $("#combu_cant").val(),
+						combu_prec: $("#combu_prec").val(),
+						combu_fecreg: $("#combu_fecreg").val(),	
+						combu_obs: $("#combu_obs").val()
+					};
+				
+					$.post(url, { mDCombustible : mDCombustible })
+					.done(function (data) {
+						Reset();
+						ReloadGrid();
+						swal('Mensaje de confirmacion', 'Registro Grabado', 'success');
+					});
+				}				
+			});
+
+			$("#btnAddnew").click(function(){
+				Reset();
+			});
+		});
+
+		function Edit(oCombu) {
+				$("#id_combu").val(oCombu.id_combu);
+				$("#id_vehi").val(oCombu.id_vehi);
+				$("#id_grifo").val(oCombu.id_grifo);
+				$("#combu_cant").val(oCombu.combu_cant);
+				$("#combu_prec").val(oCombu.combu_prec);
+				$("#combu_fecreg").val(oCombu.combu_fecreg);
+				$("#combu_obs").val(oCombu.combu_obs);
+		}
+
+		function Delete(oCombu) {
+			var id = oCombu.id_combu;		
+			$.ajax({
+				url: "api/SVMDCombustible/" + id,
+				type: "DELETE",
+				success: function(result){										 
+					 swal('Mensaje de confirmacion', 'Carga eliminada', 'success');
+					 ReloadGrid();
+				}
+			});											
+		}
+
+		function Reset() {
+			$("#id_combu").val(0);
+			$("#id_vehi").val("");
+			$("#id_grifo").val("");
+			$("#combu_cant").val(0);
+			$("#combu_prec").val(0);
+			$("#combu_fecreg").val("");
+			$("#combu_obs").val("");
+			
+		}
+		function ReloadGrid() {
+			$("#tblcomb").DataTable().clear();
+			$("#tblcomb").DataTable().ajax.reload();
+		}
+
+	</script>
+}

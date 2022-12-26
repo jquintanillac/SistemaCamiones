@@ -1,0 +1,196 @@
+﻿@{
+	ViewData["Title"] = "Liquidacion";
+	 Layout="~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+
+
+<br />
+<div class="container-fluid">
+	<div class="card">
+		<div class="card-header">
+			 <div class="div-title">
+				<h3 class="text-center">LIQUIDACION</h3>
+			 </div>
+			 <hr />
+			 <br />		
+			 <div class="container-fluid">  
+				 <div class="row">
+					 <input type="hidden" id="id_liqui" value=""  />	
+					 <div class="form-group col">
+						<label class="control-label">(*) Viatico: </label>
+						<select class="form-control" id="id_viatcab" asp-items="@(new SelectList(ViewBag.viatcab, "id_viatcab", "viatcab_desc"))">
+                            <option>Seleccione viatico</option>
+                        </select>					
+					</div>
+				 </div>
+				 <div class="row">
+					<div class="form-group col">
+						<label class="control-label">(*) Descripcion: </label>
+						<input id="liqui_desc" placeholder="Descripcion" class="form-control" />						
+					</div>			
+				 </div>	
+				 <div class="row">
+					<div class="form-group col">
+                        <label class="control-label">(*) Fecha registro: </label>
+                        <input id="liqui_fecreg" type="date" class="form-control" />
+                    </div>
+					<div class="form-group col">
+						<label class="control-label">(*) Monto: </label>
+						<input id="liqui_monto" type="number" step="0.01" placeholder="Ingrese monto" class="form-control" />						
+					</div>
+				 </div>	
+				 <div class="row">
+					 <div class="col-md-6">
+						<button id="btnsave" class="btn btn-success btn-sm">Guardar</button>
+						<button id="btnAddnew" class="btn btn-primary btn-sm">Limpiar Datos</button>	
+					</div>	
+				 </div>
+				 <br />
+				 <div class="row">
+					 <div class="col-md-6">
+						<h6><label>Campos obligatorios(*)</label></h6>
+					</div>	
+				 </div>
+			 </div>
+		</div>
+	<div class="card-body">
+			<table id="tblliqui" class="table table-striped table-bordered" style="width: 100%">
+				<thead>
+					<tr>
+						<th class="d-none">id_liqui</th>
+						<th class="d-none">id_viatcab</th>
+						<th>Descripcion</th>
+						<th>Fecha Registro</th>
+						<th>Monto</th> 
+						<th>Accciones</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts {
+	<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$(function () {
+				$("#id_viatcab").select2({
+
+				});	
+			});
+
+			$('#tblliqui').DataTable({
+				"ajax": {
+				"url": "/api/SVMDLiquidacion",
+				"dataSrc": ""				
+				},
+				"pageLength": 15,
+				 "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontraron registros",
+                    "info": "Mostrar pagina _PAGE_ de _PAGES_",
+                    "infoEmpty": "No se encontraron registros",
+                    "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "next": "siguiente",
+                        "previous": "Anterior"
+                    }
+				},
+                "scrollX": true,
+                "responsive": true,								
+				"columns": [
+					{ data: 'id_liqui', "visible": false },
+					{ data: 'id_viatcab', "visible": false },
+					{ data: 'liqui_desc' },
+					{ data: 'liqui_fecreg' },
+					{ data: 'liqui_monto' },
+					{
+						data: "id", render: function (data, type, row, meta) {
+							return "<button class='btn-md btn-primary' onclick='Edit(" + JSON.stringify(row) + ")'>Editar</button>" +
+								   "<button class='btn-md btn-danger'  onclick='Delete(" + JSON.stringify(row) + ")'>Eliminar</button>";
+						}
+					}
+				]
+			});
+
+			$("#btnsave").click(function() {
+				var id_viatcab = $("#id_viatcab").val();
+				var	liqui_desc = $("#liqui_desc").val();
+				var	liqui_fecreg = $("#liqui_fecreg").val();	
+				var	liqui_monto = $("#liqui_monto").val();
+
+				if(id_viatcab === 'Seleccione viatico' || liqui_desc === '' || liqui_fecreg === '' || liqui_monto === ''){
+					swal('Mensaje de advertencia', 'Complete los campos requeridos', 'error');
+				}
+                else{
+					var mDLiquidacion = {
+						id_liqui: $.trim($("#id_liqui").val()) == "" ? 0 : $("#id_liqui").val(),  
+						id_viatcab: $("#id_viatcab").val(),
+						liqui_desc: $("#liqui_desc").val(),
+						liqui_fecreg: $("#liqui_fecreg").val(),	
+						liqui_monto: $("#liqui_monto").val()
+					};
+				
+					$.post("api/SVMDLiquidacion", { mDLiquidacion : mDLiquidacion })
+					.done(function (data) {
+						Reset();
+						ReloadGrid();
+						swal('Mensaje de confirmacion', 'Registro Grabado', 'success');
+					});
+
+				}				
+			});
+
+			$("#btnAddnew").click(function(){
+				Reset();
+			});
+		});
+
+		function Edit(oLiquid) {
+			$("#id_liqui").val(oLiquid.id_liqui);
+			$("#id_viatcab").val(oLiquid.id_viatcab);
+			$("#liqui_desc").val(oLiquid.liqui_desc);
+			$("#liqui_fecreg").val(oLiquid.liqui_fecreg);
+			$("#liqui_monto").val(oLiquid.liqui_monto);			
+		}
+
+		function Delete(oLiquid) {
+			var id = oLiquid.id_liqui;		
+			$.ajax({
+				url: "api/SVMDLiquidacion/" + id,
+				type: "DELETE",
+				success: function(result){										 
+					 swal('Mensaje de confirmacion', 'Registro eliminado', 'success');
+					 ReloadGrid();
+				}
+			});											
+		}
+
+		function Reset() {
+			$("#id_liqui").val(0);
+			$("#id_viatcab").val(0).change();
+			$("#liqui_desc").val("");
+			$("#liqui_fecreg").val("");
+			$("#liqui_monto").val(0);	
+			
+		}
+		function ReloadGrid() {
+			$("#tblliqui").DataTable().clear();
+			$("#tblliqui").DataTable().ajax.reload();
+		}
+
+	</script>
+}

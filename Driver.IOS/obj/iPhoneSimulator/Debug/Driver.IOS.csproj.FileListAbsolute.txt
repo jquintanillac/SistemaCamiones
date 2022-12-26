@@ -1,0 +1,15 @@
+D:\Proyectos Personales\Camiones\Driver\Driver.IOS\bin\iPhoneSimulator\Debug\Driver.IOS.exe
+D:\Proyectos Personales\Camiones\Driver\Driver.IOS\bin\iPhoneSimulator\Debug\Driver.IOS.pdb
+D:\Proyectos Personales\Camiones\Driver\Driver.IOS\bin\iPhoneSimulator\Debug\Xamarin.Essentials.dll
+D:\Proyectos Personales\Camiones\Driver\Driver.IOS\bin\iPhoneSimulator\Debug\Xamarin.Essentials.pdb
+D:\Proyectos Personales\Camiones\Driver\Driver.IOS\obj\iPhoneSimulator\Debug\actool\_PartialAppManifest.items
+D:\Proyectos Personales\Camiones\Driver\Driver.IOS\obj\iPhoneSimulator\Debug\actool\_BundleResourceWithLogicalName.items
+D:\Proyectos Personales\Camiones\Driver\Driver.IOS\obj\iPhoneSimulator\Debug\ibtool\_BundleResourceWithLogicalName.items
+D:\Proyectos Personales\Camiones\Driver\Driver.IOS\obj\iPhoneSimulator\Debug\coremlc\_PartialAppManifest.items
+D:\Proyectos Personales\Camiones\Driver\Driver.IOS\obj\iPhoneSimulator\Debug\coremlc\_BundleResourceWithLogicalName.items
+D:\Proyectos Personales\Camiones\Driver\Driver.IOS\obj\iPhoneSimulator\Debug\optimized\
+D:\Proyectos Personales\Camiones\Driver\Driver.IOS\obj\iPhoneSimulator\Debug\Driver.IOS.csproj.AssemblyReference.cache
+D:\Proyectos Personales\Camiones\Driver\Driver.IOS\obj\iPhoneSimulator\Debug\Driver.IOS.csproj.CoreCompileInputs.cache
+D:\Proyectos Personales\Camiones\Driver\Driver.IOS\obj\iPhoneSimulator\Debug\Driver.IOS.csproj.CopyComplete
+D:\Proyectos Personales\Camiones\Driver\Driver.IOS\obj\iPhoneSimulator\Debug\Driver.IOS.exe
+D:\Proyectos Personales\Camiones\Driver\Driver.IOS\obj\iPhoneSimulator\Debug\Driver.IOS.pdb

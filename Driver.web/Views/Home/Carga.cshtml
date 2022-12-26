@@ -1,0 +1,159 @@
+﻿@{
+	ViewData["Title"] = "Cargas";
+	 Layout="~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+</head>
+
+<br />
+<div class="container-fluid">
+	<div class="card">
+		<div class="card-header">
+			 <div class="div-title">
+				<h3 class="text-center">CARGAS</h3>
+			 </div>
+			 <hr />
+			 <br />		
+			 <div class="container-fluid">  
+				 <div class="row">
+					 <input type="hidden" id="id_carga" value=""  />	
+					 <div class="form-group col">
+						<label class="control-label">Descripcion: </label>
+						<input id="carg_desc" placeholder="Descripcion carga" class="form-control" />						
+					</div>
+					<div class="form-group col">
+						<label class="control-label">Codigo: </label>
+						<input id="carg_cod" placeholder="Codigo carga" class="form-control" />						
+					</div>
+				 </div>
+				 <div class="row">
+					<div class="col-md-1"></div>
+					<div class="col-md-3" >
+						<div class="form-group form-check">
+							<input type="checkbox" class="form-check-input" id="chkcarg" >
+							<label class="form-check-label" >Activo</label>					
+						</div>
+					</div>											    
+				 </div>	
+				 <div class="row">
+					 <div class="col-md-6">
+						<button id="btnsave" class="btn-md btn-success" style="margin-right:5px">Guardar</button>
+						<button id="btnAddnew" class="btn-md btn-primary"  style="margin-right:5px">Limpiar Datos</button>	
+					</div>	
+				 </div>
+			 </div>
+		</div>
+	<div class="card-body">
+			<table id="tblcarga" class="table table-striped table-bordered" style="width: 100%">
+				<thead>
+					<tr>
+						<th class="d-none">ID</th>
+						<th>Descripcion</th>
+						<th>Codigo</th>
+						<th>Activo</th>
+						<th>Accciones</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts {
+	<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$('#tblcarga').DataTable({
+				"ajax": {
+				"url": "/api/MDCarga",
+				"dataSrc": ""				
+				},
+				"pageLength": 15,
+				 "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontraron registros",
+                    "info": "Mostrar pagina _PAGE_ de _PAGES_",
+                    "infoEmpty": "No se encontraron registros",
+                    "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "next": "siguiente",
+                        "previous": "Anterior"
+                    }
+				},
+                "scrollX": true,
+                "responsive": true,								
+				"columns": [
+					{ data: 'id_carga', "visible": false },
+					{ data: 'carg_desc' },
+					{ data: 'carg_cod' },
+					{ data: 'carg_act' },
+					{
+						data: "id", render: function (data, type, row, meta) {
+							return "<button class='btn-md btn-primary' onclick='Edit(" + JSON.stringify(row) + ")'>Editar</button>" +
+								   "<button class='btn-md btn-danger'  onclick='Delete(" + JSON.stringify(row) + ")'>Eliminar</button>";
+						}
+					}
+				]
+			});
+
+			$("#btnsave").click(function() {
+				var mDCarga = {
+					id_carga: $.trim($("#id_carga").val()) == "" ? 0 : $("#id_carga").val(),  
+					carg_desc: $("#carg_desc").val(),
+					carg_cod: $("#carg_cod").val(),
+					chkcarg: $("#chkcarg").attr("checked") ? 0 : 1				
+				};
+				
+				$.post("api/MDCarga", { mDCarga : mDCarga })
+					.done(function (data) {
+						Reset();
+						ReloadGrid();
+						swal('Mensaje de confirmacion', 'Registro Grabado', 'success');
+					});
+			});
+
+			$("#btnAddnew").click(function(){
+				Reset();
+			});
+		});
+
+		function Edit(oCarga) {
+			$("#id_carga").val(oCarga.id_carga);
+			$("#carg_desc").val(oCarga.carg_desc);
+			$("#carg_cod").val(oCarga.carg_cod);
+			$("#chkcarg").val(oCarga.chkcarg);
+		}
+
+		function Delete(oCarga) {
+			var id = oCarga.id_carga;		
+			$.ajax({
+				url: "api/MDCarga/" + id,
+				type: "DELETE",
+				success: function(result){										 
+					 swal('Mensaje de confirmacion', 'Carga eliminada', 'success');
+					 ReloadGrid();
+				}
+			});											
+		}
+
+		function Reset() {
+			$("#id_carga").val(0);
+			$("#carg_desc").val("");
+			$("#carg_cod").val("");
+			
+		}
+		function ReloadGrid() {
+			$("#tblcarga").DataTable().clear();
+			$("#tblcarga").DataTable().ajax.reload();
+		}
+
+	</script>
+}

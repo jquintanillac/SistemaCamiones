@@ -1,0 +1,26 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "ecb04700-8ee8-465e-9945-e7af22c812a4": {
+      "ProjectGuid": "ecb04700-8ee8-465e-9945-e7af22c812a4",
+      "DisplayName": "Driver.web",
+      "ColorIndex": 0
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Archivos varios",
+      "ColorIndex": -1
+    },
+    "80307874-6bcc-49a4-bbb0-ac4c7788c9c6": {
+      "ProjectGuid": "80307874-6bcc-49a4-bbb0-ac4c7788c9c6",
+      "DisplayName": "Driver.prism",
+      "ColorIndex": 1
+    },
+    "ee46eaad-0bce-43cb-af7a-6e61286aef9a": {
+      "ProjectGuid": "ee46eaad-0bce-43cb-af7a-6e61286aef9a",
+      "DisplayName": "Driver.common",
+      "ColorIndex": 2
+    }
+  },
+  "NextColorIndex": 3
+}

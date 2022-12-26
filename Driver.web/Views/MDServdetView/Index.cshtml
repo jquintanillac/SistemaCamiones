@@ -1,0 +1,236 @@
+﻿
+@{
+	ViewData["Title"] = "Asginacion Recursos";
+	 Layout="~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+
+<br />
+<div class="container-fluid">
+	<div class="card">
+		<div class="card-header">
+			 <div class="div-title">
+				<h3 class="text-center">RECURSOS VIAJE</h3>
+			 </div>
+			 <hr />
+			 <br />		
+			 <h4>Nro. Viaje: @ViewData["Nroviaje"]</h4>
+			 <div class="container-fluid">  
+				 <div class="row">		
+					 <input type="hidden" id="id_servdet" value=""  />	
+					 <input type="hidden" id="id_servcab" value="@ViewData["id_servcab"]"  />					 
+					 <div class="form-group col">
+						<label class="control-label">(*) Chofer: </label>
+						<select class="form-control" id="id_chofer" asp-items="@(new SelectList(ViewBag.chofer, "id_chofer", "chofer_nomcompleto"))">
+                            <option>Seleccione chofer</option>
+                        </select>					
+					</div>
+					 <div class="form-group col">
+						<label class="control-label">(*) Placa: </label>
+						<select class="form-control" id="id_vehi" asp-items="@(new SelectList(ViewBag.placa, "id_vehi", "vehi_placa"))">
+                            <option>Seleccione placa</option>
+                        </select>					
+					</div>
+				 </div>
+				  <div class="row">							 
+					 <div class="form-group col">
+						<label class="control-label">(*) Transportista: </label>
+						<select class="form-control" id="id_transp" asp-items="@(new SelectList(ViewBag.transp, "id_transp", "transp_desc"))">
+                            <option>Seleccione transportista</option>
+                        </select>					
+					</div>				
+				 </div>
+	    		 <div class="row">
+					<div class="form-group col">
+						<label class="control-label">(*) Cantidad: </label>
+						<input id="servdet_cantdet" placeholder="Ingrese cantidad" class="form-control" />						
+					</div>	
+					<div class="form-group col">
+						<label class="control-label">(*) Precio unitario: </label>
+						<input id="servdet_preunit" placeholder="Ingrese precio unitario" class="form-control" />						
+					</div>										    
+				 </div>
+				 <div class="row">
+					 <div class="col-md-6">
+						<button id="btnsave" class="btn btn-success btn-sm">Guardar</button>
+						<button id="btnAddnew" class="btn btn-primary btn-sm">Limpiar Datos</button>	
+					</div>	
+				 </div>
+				 <br />
+				 <div class="row">
+					 <div class="col-md-6">
+						<h6><label>Campos obligatorios(*)</label></h6>
+					</div>	
+				 </div>
+			 </div>
+		</div>
+		<div class="card-body">
+			<table id="tblservdet" class="table table-striped table-bordered" style="width: 100%">
+				<thead>
+					<tr>
+						<th class="d-none">id_servdet</th>
+						<th class="d-none">id_servcab</th>
+						<th class="d-none">id_transp</th>
+						<th class="d-none">id_chofer</th>
+						<th class="d-none">id_vehi</th>
+						<th>Transportista</th>
+						<th>Chofer</th>
+						<th>Placa</th>
+						<th>Cantidad</th>
+						<th>Precio unitario</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$(function () {
+				$("#id_chofer").select2({
+
+				});	
+				$("#id_vehi").select2({
+
+				});	
+				$("#id_transp").select2({
+
+				});	
+			});
+			//var origin = $(location).attr('origin'); 
+			//var url = origin + '/api/SVMDDocumento_Detalle/';
+			var id = $("#id_servcab").val();
+			$('#tblservdet').DataTable({
+				"ajax": {
+				"url": "/api/SVMDServicio_Detalle/" + id,
+				"dataSrc": ""				
+				},
+				"pageLength": 15,
+				 "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontraron registros",
+                    "info": "Mostrar pagina _PAGE_ de _PAGES_",
+                    "infoEmpty": "No se encontraron registros",
+                    "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "next": "siguiente",
+                        "previous": "Anterior"
+                    }
+				},
+                "scrollX": true,
+                "responsive": true,								
+				"columns": [
+					{ data: 'id_servdet', "visible": false },
+					{ data: 'id_servcab', "visible": false },
+					{ data: 'id_transp', "visible": false },
+					{ data: 'id_chofer', "visible": false },
+					{ data: 'id_vehi', "visible": false },
+					{ data: 'transp_desc' },
+					{ data: 'chof_nomcomp' },
+					{ data: 'vehi_placa' },
+					{ data: 'servdet_cantdet' },
+					{ data: 'servdet_preunit' },
+					{
+						data: "id", render: function (data, type, row, meta) {
+							return "<button class='btn btn-primary btn-sm' onclick='Edit(" + JSON.stringify(row) + ")'>Editar</button>" +
+								   "<button class='btn btn-danger btn-sm'  onclick='Delete(" + JSON.stringify(row) + ")'>Eliminar</button>";
+						}
+					}
+				]
+			});
+
+			$("#btnsave").click(function() {				
+				var	id_transp = $("#id_transp").val();
+				var	id_chofer = $("#id_chofer").val();
+				var	id_vehi = $("#id_vehi").val();
+				var	servdet_cantdet = $("#servdet_cantdet").val();
+				var	servdet_preunit = $("#servdet_preunit").val();
+
+				if(id_transp === 'Seleccione transportista' || id_chofer === 'Seleccione chofer' || id_vehi === 'Seleccione placa' || servdet_cantdet === '' || servdet_preunit === ''){
+					swal('Mensaje de advertencia', 'Complete los campos requeridos', 'error');
+				}
+				else{
+					var origin = $(location).attr('origin'); 
+					var url = origin + '/api/SVMDServicio_Detalle';
+					var mDServicio_Detalle = {
+						id_servdet: $.trim($("#id_servdet").val()) == "" ? 0 : $("#id_servdet").val(),  
+						id_servcab: $("#id_servcab").val(),  
+						id_transp: $("#id_transp").val(),
+						id_chofer: $("#id_chofer").val(),
+						id_vehi: $("#id_vehi").val(),
+						transp_desc: "",
+						chof_nomcomp: "",
+						vehi_placa: "",
+						servdet_cantdet: $("#servdet_cantdet").val(),
+						servdet_preunit: $("#servdet_preunit").val()
+					};
+				
+					$.post(url, { mDServicio_Detalle : mDServicio_Detalle })
+					.done(function (data) {
+						Reset();
+						ReloadGrid();
+						swal('Mensaje de confirmacion', 'Registro Grabado', 'success');
+					});
+				}			
+			});
+
+			$("#btnAddnew").click(function(){
+				Reset();
+			});
+		});
+
+		function Edit(oServdet) {
+			$("#id_servdet").val(oServdet.id_servdet);
+			$("#id_servcab").val(oServdet.id_servcab);
+			$("#id_transp").val(oServdet.id_transp);			
+			$("#id_chofer").val(oServdet.id_chofer);
+			$("#id_vehi").val(oServdet.id_vehi);
+			$("#servdet_cantdet").val(oServdet.servdet_cantdet);
+			$("#servdet_preunit").val(oServdet.servdet_preunit);
+			
+		}
+
+		function Delete(oServdet) {
+			var origin = $(location).attr('origin'); 
+			var url = origin + '/api/SVMDServicio_Detalle/';
+			var id = oServdet.id_servdet;		
+			$.ajax({
+				url: url + id,
+				type: "DELETE",
+				success: function(result){										 
+					 swal('Mensaje de confirmacion', 'Registro eliminado', 'success');
+					 ReloadGrid();
+				}
+			});											
+		}
+
+		function Reset() {
+			$("#id_servdet").val(0);
+			$("#id_transp").val(0);			
+			$("#id_chofer").val(0);
+			$("#id_vehi").val(0);
+			$("#servdet_cantdet").val("");
+			$("#servdet_preunit").val("");
+			
+		}
+		function ReloadGrid() {
+			$("#tblservdet").DataTable().clear();
+			$("#tblservdet").DataTable().ajax.reload();
+		}
+
+	</script>
+}

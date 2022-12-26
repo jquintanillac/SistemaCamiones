@@ -1,0 +1,224 @@
+﻿@{
+	ViewData["Title"] = "Repuestos Camion";
+	 Layout="~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+
+<br />
+<div class="container-fluid">
+	<div class="card">
+		<div class="card-header">
+			 <div class="div-title">
+				<h3 class="text-center">MANTENIMIENTO CAMION</h3>
+			 </div>
+			 <hr />
+			 <br />		
+			 <div class="container-fluid">  
+				 <div class="row">
+					 <input type="hidden" id="id_repcam" value=""  />	
+					 <div class="form-group col">
+                        <label class="control-label">(*) Producto: </label>
+                        <select class="form-control" id="id_product" asp-items="@(new SelectList(ViewBag.inventario, "id_product", "product_descr"))">
+                            <option>Seleccione producto</option>
+                        </select>
+                    </div>
+                    <div class="form-group col">
+                        <label class="control-label">(*) Placa: </label>
+                        <select class="form-control" id="id_vehi" asp-items="@(new SelectList(ViewBag.vehiculo, "id_vehi", "vehi_placa"))">
+                            <option>Seleccione vehiculo</option>
+                        </select>
+                    </div>
+				 </div>
+				 <div class="row">
+				    <div class="form-group col">
+                        <label class="control-label">(*) Descripcion: </label>
+                        <textarea id="repcam_desc" placeholder="Descripicion" class="form-control"></textarea> 
+                    </div>		
+                   <div class="form-group col">
+                        <label class="control-label">(*) Cantidad: </label>
+                        <input type="number"  id="repcam_cant" placeholder="Cantidad" class="form-control" /> 
+                    </div>                   
+                </div>
+				<div class="row">
+                   	<div class="form-group col">
+                        <label class="control-label">(*) Fecha ingreso: </label>
+                        <input id="repcam_fecreg" type="date" class="form-control" />
+                    </div>
+					<div class="form-group col">
+                        <label class="control-label">(*) Fecha Salida: </label>
+                        <input id="repcam_fecsal" type="date" class="form-control" />
+                    </div>
+                </div>
+				 <div class="row">
+					 <div class="col-md-6">
+						<button id="btnsave" class="btn btn-success btn-sm">Guardar</button>
+                        <button id="btnAddnew" class="btn btn-primary btn-sm">Limpiar Datos</button>
+					</div>	
+				 </div>
+				 <br />
+				 <div class="row">
+					 <div class="col-md-6">
+						<h6><label>Campos obligatorios(*)</label></h6>
+					</div>	
+				 </div>
+			 </div>
+		</div>
+	<div class="card-body">
+			<table id="tblrepcam" class="table table-striped table-bordered" style="width: 100%">
+				<thead>
+					<tr>
+						<th class="d-none">ID</th>
+						<th class="d-none">ID</th>
+						<th class="d-none">ID</th>
+						<th>Producto</th>
+						<th>Placa</th>
+						<th>Cantidad</th>
+						<th>Descripcion</th>
+						<th>Fecha ingreso</th>
+						<th>Fecha salida</th>
+						<th>Accciones</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts {
+	<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$(function () {
+				$("#id_product").select2({
+
+				});
+				$("#id_vehi").select2({
+
+				});
+			});
+			$('#tblrepcam').DataTable({
+				"ajax": {
+				"url": "/api/SVMDRepuestos_Camion",
+				"dataSrc": ""				
+				},
+				"pageLength": 15,
+				 "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontraron registros",
+                    "info": "Mostrar pagina _PAGE_ de _PAGES_",
+                    "infoEmpty": "No se encontraron registros",
+                    "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "next": "siguiente",
+                        "previous": "Anterior"
+                    }
+				},
+                "scrollX": true,
+                "responsive": true,								
+				"columns": [
+					{ data: 'id_repcam', "visible": false },
+					{ data: 'id_product', "visible": false },
+					{ data: 'id_vehi', "visible": false },
+					{ data: 'product_descr' },
+					{ data: 'vehi_placa' },
+					{ data: 'repcam_cant' },
+					{ data: 'repcam_desc' },
+					{ data: 'repcam_fecreg' },
+					{ data: 'repcam_fecsal' },
+					{
+						data: "id", render: function (data, type, row, meta) {
+							return "<button class='btn-md btn-primary' onclick='Edit(" + JSON.stringify(row) + ")'>Editar</button>" +
+								   "<button class='btn-md btn-danger'  onclick='Delete(" + JSON.stringify(row) + ")'>Eliminar</button>";
+						}
+					}
+				]
+			});
+
+			$("#btnsave").click(function() {
+
+				var id_product = $("#id_product").val();
+				var	id_vehi = $("#id_vehi").val();
+				var	repcam_cant = $("#repcam_cant").val();
+				var	repcam_desc = $("#repcam_desc").val();
+				var	repcam_fecreg = $("#repcam_fecreg").val();	
+				var	repcam_fecsal = $("#repcam_fecsal").val();	
+
+				if(id_product === 'Seleccione producto' || id_vehi === 'Seleccione vehiculo' || repcam_cant === '' || repcam_desc === '' || repcam_fecreg === '' || repcam_fecsal === ''){
+					swal('Mensaje de advertencia', 'Complete los campos requeridos', 'error');
+				}
+				else{
+					var origin = $(location).attr('origin'); 
+					var url = origin + '/api/SVMDRepuestos_Camion';
+					var mDRepuestos_Camion = {
+						id_repcam: $.trim($("#id_repcam").val()) == "" ? 0 : $("#id_repcam").val(),  
+						id_product: $("#id_product").val(),
+						id_vehi: $("#id_vehi").val(),
+						repcam_cant: $("#repcam_cant").val(),
+						repcam_desc: $("#repcam_desc").val(),
+						repcam_fecreg: $("#repcam_fecreg").val(),	
+						repcam_fecsal: $("#repcam_fecsal").val()	
+					};
+				
+					$.post(url, { mDRepuestos_Camion : mDRepuestos_Camion })
+					.done(function (data) {
+						Reset();
+						ReloadGrid();
+						swal('Mensaje de confirmacion', 'Registro Grabado', 'success');
+					});								
+				}			
+			});
+
+			$("#btnAddnew").click(function(){
+				Reset();
+			});
+		});
+
+		function Edit(oRepcam) {
+			$("#id_repcam").val(oRepcam.id_repcam);
+			$("#id_product").val(oRepcam.id_product).change();
+			$("#id_vehi").val(oRepcam.id_vehi).change();
+			$("#repcam_cant").val(oRepcam.repcam_cant);
+			$("#repcam_desc").val(oRepcam.repcam_desc);
+			$("#repcam_fecreg").val(oRepcam.repcam_fecreg);
+			$("#repcam_fecsal").val(oRepcam.repcam_fecsal);
+		}
+
+		function Delete(oRepcam) {
+			var id = oRepcam.id_repcam;		
+			$.ajax({
+				url: "api/SVMDRepuestos_Camion/" + id,
+				type: "DELETE",
+				success: function(result){										 
+					 swal('Mensaje de confirmacion', 'Carga eliminada', 'success');
+					 ReloadGrid();
+				}
+			});											
+		}
+
+		function Reset() {
+			$("#id_repcam").val(0);
+			$("#id_product").val(0).change();
+			$("#id_vehi").val(0).change();
+			$("#repcam_cant").val(0);
+			$("#repcam_desc").val("");
+			$("#repcam_fecreg").val("");
+			
+		}
+		function ReloadGrid() {
+			$("#tblrepcam").DataTable().clear();
+			$("#tblrepcam").DataTable().ajax.reload();
+		}
+
+	</script>
+}

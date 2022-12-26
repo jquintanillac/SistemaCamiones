@@ -1,0 +1,267 @@
+﻿@{
+	ViewData["Title"] = "Facturacion";
+	 Layout="~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+
+<br />
+<div class="container-fluid">
+	<div class="card">
+		<div class="card-header">
+			 <div class="div-title">
+				<h3 class="text-center">FACTURACION</h3>
+			 </div>
+			 <hr />
+			 <br />		
+			 <div class="container-fluid">  
+				 <div class="row">
+					 <input type="hidden" id="id_faccab" value=""  />	
+				     <div class="form-group col">
+						<label class="control-label">(*) Cliente: </label>
+						<select class="form-control" id="id_cliente" asp-items="@(new SelectList(ViewBag.cliente, "id_cliente", "clie_razsocial"))">
+                            <option>Seleccione Cliente</option>
+                        </select>					
+					</div>
+					<div class="form-group col">
+						<label class="control-label">(*) Nro. viaje: </label>
+						<select class="form-control" id="id_servcab" asp-items="@(new SelectList(ViewBag.viaje, "id_servcab", "servcab_nro"))">
+                            <option>Seleccione Viaje</option>
+                        </select>					
+					</div>
+				 </div>
+				 <div class="row">
+					<div class="form-group col">
+						<label class="control-label">(*) Tipo documento: </label>
+						<select class="form-control" id="id_tipdoc" asp-items="@(new SelectList(ViewBag.tipodoc, "id_tipdoc", "tipdoc_desc"))">
+                            <option>Seleccione tipo documento</option>
+                        </select>					
+					</div>
+					<div class="form-group col">
+						<label class="control-label">(*) Serie: </label>
+						<input id="faccab_serie" placeholder="Ingrese serie" class="form-control" />						
+					</div>	
+					<div class="form-group col">
+						<label class="control-label">(*) Nro. Factura: </label>
+						<input id="faccab_nro" placeholder="Ingrese factura"  class="form-control" />						
+					</div>
+					<div class="form-group col">
+						<label class="control-label">(*) Nro. Guia: </label>
+						<input id="faccab_guia" placeholder="Ingrese Guia"  class="form-control" />						
+					</div>	
+				 </div>	
+				 <div class="row">
+					<div class="form-group col">
+						<label class="control-label">(*) Fecha factura: </label>
+						<input id="faccab_fecreg" type="date" class="form-control" />						
+					</div>	
+					<div class="form-group col">
+						<label class="control-label">(*) Fecha vencimiento: </label>
+						<input id="faccab_fecvenc" type="date" class="form-control" />						
+					</div>										    
+				 </div>	
+				  <div class="row">
+					<div class="form-group col">
+						<label class="control-label">(*) Monto: </label>
+						<input id="faccab_monto" type="number" step="0.01" class="form-control" />						
+					</div>	
+					<div class="form-group col">
+						<label class="control-label">(*) Igv: </label>
+						<input id="faccab_igv" type="number" step="0.01" class="form-control" />						
+					</div>
+					<div class="form-group col">
+						<label class="control-label">(*) Total: </label>
+						<input id="faccab_total" type="number" step="0.01" class="form-control" />						
+					</div>		
+				 </div>	
+				 <div class="row">
+					 <div class="col-md-6">
+						<button id="btnsave" class="btn btn-success btn-sm">Guardar</button>
+						<button id="btnAddnew" class="btn btn-primary btn-sm">Limpiar Datos</button>	
+					</div>	
+				 </div>
+				 <br />
+				 <div class="row">
+					 <div class="col-md-6">
+						<h6><label>Campos obligatorios(*)</label></h6>
+					</div>	
+				 </div>
+			 </div>
+		</div>
+	<div class="card-body">
+			<table id="tblfactu" class="table table-striped table-bordered" style="width: 100%">
+				<thead>
+					<tr>
+						<th class="d-none">id_faccab</th>
+						<th class="d-none">id_cliente</th>
+						<th class="d-none">id_servcab</th>
+						<th class="d-none">id_tipdoc</th>
+						<th>Serie</th>
+						<th>Nro. Factura</th>
+						<th>Fecha Registro</th>
+						<th>fecha Vencimiento</th>
+						<th>Monto</th>
+						<th>Igv</th>
+						<th>Monto total</th>
+						<th>Accciones</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts {
+	<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$(function () {
+				$("#id_cliente").select2({
+
+				});	
+				$("#id_servcab").select2({
+
+				});	
+			});
+
+			$('#tblfactu').DataTable({
+				"ajax": {
+				"url": "/api/SVMDFactura_Cabecera",
+				"dataSrc": ""				
+				},
+				"pageLength": 15,
+				 "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontraron registros",
+                    "info": "Mostrar pagina _PAGE_ de _PAGES_",
+                    "infoEmpty": "No se encontraron registros",
+                    "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "next": "siguiente",
+                        "previous": "Anterior"
+                    }
+				},
+                "scrollX": true,
+                "responsive": true,								
+				"columns": [
+					{ data: 'id_faccab', "visible": false },
+					{ data: 'id_cliente', "visible": false },
+					{ data: 'id_servcab', "visible": false },
+					{ data: 'id_tipdoc', "visible": false },
+					{ data: 'faccab_serie' },
+					{ data: 'faccab_nro' },
+					{ data: 'faccab_fecreg' },
+					{ data: 'faccab_fecvenc' },
+					{ data: 'faccab_monto' },
+					{ data: 'faccab_igv' },
+					{ data: 'faccab_total' },
+					{
+						data: "id", render: function (data, type, row, meta) {
+							return "<button class='btn-md btn-primary' onclick='Edit(" + JSON.stringify(row) + ")'>Editar</button>" +
+								   "<button class='btn-md btn-danger'  onclick='Delete(" + JSON.stringify(row) + ")'>Eliminar</button>";
+						}
+					}
+				]
+			});
+
+			$("#btnsave").click(function() {
+				var	id_cliente = $.trim($("#id_cliente").val()) == "" ? 0 : $("#id_cliente").val();  
+				var	id_servcab = $.trim($("#id_servcab").val()) == "" ? 0 : $("#id_servcab").val(); 
+				var	id_tipdoc = $.trim($("#id_tipdoc").val()) == "" ? 0 : $("#id_tipdoc").val();
+				var	faccab_serie = $("#faccab_serie").val();
+				var	faccab_nro = $("#faccab_nro").val();
+				var	faccab_fecreg = $("#faccab_fecreg").val();
+				var	faccab_fecvenc = $("#faccab_fecvenc").val();
+				var	faccab_monto =  $("#faccab_monto").val();
+				var	faccab_igv = $("#faccab_igv").val();
+				var	faccab_total = $("#faccab_total").val();
+				
+				if(id_cliente === 'Seleccione Cliente' || id_servcab === 'Seleccione Viaje' || id_tipdoc === 'Seleccione tipo documento' || faccab_serie === '' || faccab_nro === '' || faccab_fecreg === '' || faccab_fecvenc === '' || faccab_monto === '' || faccab_igv === '' || faccab_total === ''){
+					swal('Mensaje de advertencia', 'Complete los campos requeridos', 'error');
+				}
+                else{
+					var oMDFactura_Cabecera = {
+						id_faccab: $.trim($("#id_faccab").val()) == "" ? 0 : $("#id_faccab").val(),  
+						id_cliente: $.trim($("#id_cliente").val()) == "" ? 0 : $("#id_cliente").val(),  
+						id_servcab: $.trim($("#id_servcab").val()) == "" ? 0 : $("#id_servcab").val(),  
+						id_tipdoc: $.trim($("#id_tipdoc").val()) == "" ? 0 : $("#id_tipdoc").val(),  
+						faccab_serie: $("#faccab_serie").val(),
+						faccab_nro: $("#faccab_nro").val(),
+						faccab_fecreg: $("#faccab_fecreg").val(),
+						faccab_fecvenc: $("#faccab_fecvenc").val(),
+						faccab_monto: $("#faccab_monto").val(),
+						faccab_igv: $("#faccab_igv").val(),
+						faccab_total: $("#faccab_total").val()			
+					};
+				
+					$.post("api/SVMDFactura_Cabecera", { oMDFactura_Cabecera : oMDFactura_Cabecera })
+					.done(function (data) {
+						Reset();
+						ReloadGrid();
+						swal('Mensaje de confirmacion', 'Registro Grabado', 'success');
+					});
+				}
+			});
+
+			$("#btnAddnew").click(function(){
+				Reset();
+			});
+		});
+
+		function Edit(oFactu) {
+			$("#id_faccab").val(oFactu.id_faccab);
+			$("#id_cliente").val(oFactu.id_cliente);
+			$("#id_servcab").val(oFactu.id_servcab);
+			$("#id_tipdoc").val(oFactu.id_tipdoc);
+			$("#faccab_serie").val(oFactu.faccab_serie);
+			$("#faccab_nro").val(oFactu.faccab_nro);
+			$("#faccab_fecreg").val(oFactu.faccab_fecreg);
+			$("#faccab_fecvenc").val(oFactu.faccab_fecvenc);
+			$("#faccab_monto").val(oFactu.faccab_monto);
+			$("#faccab_igv").val(oFactu.faccab_igv);
+			$("#faccab_total").val(oFactu.faccab_total);
+		}
+
+		function Delete(oFactu) {
+			var id = oFactu.id_faccab;		
+			$.ajax({
+				url: "api/SVMDFactura_Cabecera/" + id,
+				type: "DELETE",
+				success: function(result){										 
+					 swal('Mensaje de confirmacion', 'Registro eliminado', 'success');
+					 ReloadGrid();
+				}
+			});											
+		}
+
+		function Reset() {
+			$("#id_faccab").val(0);
+			$("#id_cliente").val(0).change();
+			$("#id_servcab").val(0).change();
+			$("#id_tipdoc").val(0).change();
+			$("#faccab_serie").val("");
+			$("#faccab_nro").val("");
+			$("#faccab_fecreg").val("");
+			$("#faccab_fecvenc").val("");
+			$("#faccab_monto").val(0);
+			$("#faccab_igv").val(0);
+			$("#faccab_total").val(0);
+			
+		}
+		function ReloadGrid() {
+			$("#tblfactu").DataTable().clear();
+			$("#tblfactu").DataTable().ajax.reload();
+		}
+
+	</script>
+}

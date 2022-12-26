@@ -1,0 +1,149 @@
+﻿@{
+	ViewData["Title"] = "Choferes";
+	 Layout="~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+</head>
+
+<br />
+<div class="container-fluid">
+	<div class="card">
+		<div class="card-header">
+			 <div class="div-title">
+				<h3 class="text-center">INVENTARIO</h3>
+			 </div>
+			 <hr />
+			 <br />		
+		</div>
+	<div class="card-body">
+			<table id="tblinvet" class="table table-striped table-bordered" style="width: 100%">
+				<thead>
+					<tr>
+						<th class="d-none">id_invet</th>
+						<th class="d-none">id_product</th>
+						<th>Descripcion</th>
+						<th>Cantidad</th>
+						<th>Precio promedio</th>
+						<th>Precio Total</th>
+						<th>Activo</th>						
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts {
+	<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$('#tblinvet').DataTable({
+				"ajax": {
+				"url": "/api/SVMDInvetario",
+				"dataSrc": ""				
+				},
+				"pageLength": 15,
+				 "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontraron registros",
+                    "info": "Mostrar pagina _PAGE_ de _PAGES_",
+                    "infoEmpty": "No se encontraron registros",
+                    "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "next": "siguiente",
+                        "previous": "Anterior"
+                    }
+				},
+                "scrollX": true,
+                "responsive": true,								
+				"columns": [
+					{ data: 'id_invet', "visible": false },
+					{ data: 'id_product', "visible": false },
+					{ data: 'product_descr' },
+					{ data: 'invet_cant' },
+					{ data: 'invet_prepro' },
+					{ data: 'invet_pretotal' },
+					{ data: 'invet_act', 
+						"render": function (data, type, row){
+							if (row.repus_act === true) { return 'Activo';	}
+							else { return 'Inactivo'; }					
+						} 	
+					}
+					//{
+					//	data: "id", render: function (data, type, row, meta) {
+					//		return "<button class='btn-md btn-primary' onclick='Edit(" + JSON.stringify(row) + ")'>Editar</button>" +
+					//			   "<button class='btn-md btn-danger'  onclick='Delete(" + JSON.stringify(row) + ")'>Eliminar</button>";
+					//	}
+					//}
+				]
+			});
+
+			//$("#btnsave").click(function() {
+			//	var oDInventario = {
+			//		id_invet: $.trim($("#id_invet").val()) == "" ? 0 : $("#id_invet").val(),  
+			//		invet_iden: $("#invet_iden").val(),
+			//		invet_desc: $("#invet_desc").val(),
+			//		invet_cant: $("#invet_cant").val(),
+			//		invet_prepro: $("#invet_prepro").val(),
+			//		invet_act: $("#invet_act").prop("checked") ? true : false				
+			//	};
+				
+			//	$.post("api/SVMDInvetario", { oDInventario : oDInventario })
+			//		.done(function (data) {
+			//			Reset();
+			//			ReloadGrid();
+			//			swal('Mensaje de confirmacion', 'Registro Grabado', 'success');
+			//		});
+			//});
+
+			//$("#btnAddnew").click(function(){
+			//	Reset();
+			//});
+		});
+
+		//function Edit(oInventario) {
+		//	$("#id_invet").val(oInventario.id_invet);
+		//	$("#invet_iden").val(oInventario.invet_iden);
+		//	$("#invet_desc").val(oInventario.invet_desc);
+		//	$("#invet_cant").val(oInventario.invet_cant);
+		//	$("#invet_prepro").val(oInventario.invet_prepro);
+		//	$("#invet_act").val(oInventario.invet_act);
+		//}
+
+		//function Delete(oInventario) {
+		//	var id = oInventario.id_invet;		
+		//	$.ajax({
+		//		url: "api/SVMDInvetario/" + id,
+		//		type: "DELETE",
+		//		success: function(result){										 
+		//			 swal('Mensaje de confirmacion', 'Carga eliminada', 'success');
+		//			 ReloadGrid();
+		//		}
+		//	});											
+		//}
+
+		//function Reset() {
+		//	$("#id_invet").val(0);
+		//	$("#invet_iden").val("");
+		//	$("#invet_desc").val("");
+		//	$("#invet_cant").val("");
+		//	$("#invet_prepro").val("");
+			
+			
+		//}
+
+		//function ReloadGrid() {
+		//	$("#tblchofer").DataTable().clear();
+		//	$("#tblchofer").DataTable().ajax.reload();
+		//}
+
+	</script>
+}

@@ -1,0 +1,191 @@
+﻿@{
+	ViewData["Title"] = "Proceso vehiculo";
+	 Layout="~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+
+<br />
+<div class="container-fluid">
+	<div class="card">
+		<div class="card-header">
+			 <div class="div-title">
+				<h3 class="text-center">PROCESO VEHICULO</h3>
+			 </div>
+			 <hr />
+			 <br />		
+			 <div class="container-fluid">  
+				 <div class="row">
+					 <input type="hidden" id="id_provehi" value=""  />	
+					 <div class="form-group col">
+						<label class="control-label">(*) Proceso: </label>
+						<select class="form-control" id="id_proces" asp-items="@(new SelectList(ViewBag.proces, "id_proces", "proces_desc"))">
+                            <option>Seleccione proceso</option>
+                        </select>					
+					</div>
+					 <div class="form-group col">
+						<label class="control-label">(*) Vehiculo: </label>
+						<select class="form-control" id="id_vehi" asp-items="@(new SelectList(ViewBag.vehiculo, "id_vehi", "vehi_placa"))">
+                            <option>Seleccione Vehiculo</option>
+                        </select>					
+					</div>
+				 </div>
+				 <div class="row">										
+					<div class="form-group col">
+						<label class="control-label">Observacion: </label>
+						<input id="provehi_obs" placeholder="Observacion" class="form-control" />						
+					</div>
+				 </div>
+				 <div class="row">
+					 <div class="col-md-6">
+						<button id="btnsave" class="btn btn-success btn-sm">Guardar</button>
+						<button id="btnAddnew" class="btn btn-primary btn-sm">Limpiar Datos</button>	
+					</div>	
+				 </div>
+				 <br />
+				 <div class="row">
+					 <div class="col-md-6">
+						<h6><label>Campos obligatorios(*)</label></h6>
+					</div>	
+				 </div>
+			 </div>
+		</div>
+	<div class="card-body">
+			<table id="tblprovehi" class="table table-striped table-bordered" style="width: 100%">
+				<thead>
+					<tr>
+						<th class="d-none">ID</th>			
+						<th>Vehiculo</th>
+						<th>Proceso</th>
+						<th>Total Horas</th>
+						<th>Observacion</th>
+						<th>Accciones</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts {
+	<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$(function () {
+				$("#id_proces").select2({
+
+				});	
+				$("#id_vehi").select2({
+
+				});	
+			});
+			$('#tblprovehi').DataTable({
+				"ajax": {
+				"url": "/api/SVMDProceso_Vehiculo",
+				"dataSrc": ""				
+				},
+				"pageLength": 15,
+					 "language": {
+						"lengthMenu": "Mostrar _MENU_ registros por pagina",
+						"zeroRecords": "No se encontraron registros",
+						"info": "Mostrar pagina _PAGE_ de _PAGES_",
+						"infoEmpty": "No se encontraron registros",
+						"infoFiltered": "(filtrado de _MAX_ registros totales)",
+						"search": "Buscar:",
+						"paginate": {
+							"next": "siguiente",
+							"previous": "Anterior"
+						}
+				},
+                "scrollX": true,
+                "responsive": true,								
+				"columns": [
+					{ data: 'id_provehi', "visible": false },
+					{ data: 'vehi_placa' },
+					{ data: 'proces_desc' },
+					{ data: 'provehi_totalh' },
+					{ data: 'provehi_obs' },
+					{
+						data: "id", render: function (data, type, row, meta) {
+							return "<button class='btn-md btn-primary' onclick='Add(" + JSON.stringify(row) + ")'>Agregar</button>" +
+                                   "<button class='btn-md btn-danger'  onclick='Delete(" + JSON.stringify(row) + ")'>Eliminar</button>";
+						}
+					}
+				]
+			});
+
+			$("#btnsave").click(function() {
+
+				var id_vehi = $("#id_vehi").val();
+				var	id_proces = $("#id_proces").val();
+
+				if(id_vehi === 'Seleccione Vehiculo' || id_proces === 'Seleccione proceso'){
+					swal('Mensaje de advertencia', 'Complete los campos requeridos', 'error');
+				}
+				else{
+					var oProcvechi = {
+						id_provehi: $.trim($("#id_provehi").val()) == "" ? 0 : $("#id_provehi").val(),  
+						id_vehi: $("#id_vehi").val(),
+						id_proces: $("#id_proces").val(),
+						provehi_totalh: $("#provehi_totalh").val(),
+						provehi_obs: $("#provehi_obs").val()							
+					};
+				
+					$.post("api/SVMDProceso_Vehiculo", { oProcvechi : oProcvechi })
+					.done(function (data) {
+						Reset();
+						ReloadGrid();
+						swal('Mensaje de confirmacion', 'Registro Grabado', 'success');
+					});								
+				}				
+			});
+
+			$("#btnAddnew").click(function(){
+				Reset();
+			});
+		});
+
+		function Add(oProcvechi) {
+		   var id =	oProcvechi.id_provehi;
+		   // var url = "@Url.Action("Index", "MDProceso_VehiculoDetalleView")";
+		    var url = "/MDProceso_VehiculoDetalleView/Index/" + id;
+		    window.location.href = url;
+
+		}
+
+		function Delete(oProcvechi) {
+			var id = oProcvechi.id_provehi;		
+			$.ajax({
+				url: "api/SVMDProceso_Vehiculo/" + id,
+				type: "DELETE",
+				success: function(result){										 
+					 swal('Mensaje de confirmacion', 'Opcion eliminada', 'success');
+					 ReloadGrid();
+				}
+			});											
+		}
+
+		function Reset() {
+			$("#id_provehi").val(0);
+			$("#id_vehi").val(0);
+			$("#id_proces").val(0);
+			$("#provehi_totalh").val(0);
+			$("#provehi_obs").val("");
+			
+		}
+		function ReloadGrid() {
+			$("#tblprovehi").DataTable().clear();
+			$("#tblprovehi").DataTable().ajax.reload();
+		}
+
+	</script>
+}

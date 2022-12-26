@@ -1,0 +1,197 @@
+﻿@{
+    ViewData["Title"] = "Estados Vehiculos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />    
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+</head>
+
+<br />
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <div class="div-title">
+                <h3 class="text-center">PROCESO VEHICULO DETALLE</h3>
+            </div>
+            <hr />
+            <br />
+            <div class="container-fluid">
+                <div class="row">
+                    <input type="hidden" id="id_provehidet" value="" />
+                    <input type="hidden" id="id_provehi" value="" />
+                    <input type="hidden" id="id_estad" value="" />
+                    <div class="form-group col">
+                        <label class="control-label">Proceso: </label>
+                        <input id="proces_desc" class="form-control" readonly />
+                    </div>
+                    <div class="form-group col">
+                        <label class="control-label">Estado: </label>
+                        <input id="estad_desc" class="form-control" readonly />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col">
+                        <label class="control-label">(*) Fecha Inicio: </label>
+                        <input type="datetime-local" id="provehidet_fecini" class="form-control" />
+                    </div>
+                    <div class="form-group col">
+                        <label class="control-label">(*) Fecha Fin: </label>
+                        <input type="datetime-local" id="provehidet_fecfin" class="form-control" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        @*<button id="btnsave" class="btn btn-success btn-sm" formaction="@Url.Action("listacanal", "MDViaje_Detalle")">Guardar</button>*@
+                        <button id="btnsave" class="btn btn-success btn-sm">Guardar</button>
+                    </div>
+                </div>
+                 <br />
+				 <div class="row">
+					 <div class="col-md-6">
+						<h6><label>Campos obligatorios(*)</label></h6>
+					</div>	
+				 </div>
+            </div>          
+        </div>
+        <div class="card-body">
+            <div class="container">
+                <input type="hidden" id="id_provehi2" name="id_provehi2" value="@ViewData["id_provehi"]">
+                <table id="tbldetvehi" class="table table-striped table-bordered" style="width: 100%">
+                    <thead>
+                        <tr>
+                            <th class="d-none">
+                                id_provehidet
+                            </th>
+                            <th class="d-none">
+                                id_provehi
+                            </th>
+                            <th class="d-none">
+                                id_estad
+                            </th>
+                            <th>
+                                Proceso
+                            </th>
+                            <th>
+                                Estado
+                            </th>
+                            <th>
+                                Fecha Inicio
+                            </th>
+                            <th>
+                                Fecha Fin
+                            </th>
+                            <th>
+                                Acciones
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="container">
+            <a class='btn btn-info btn-sm text-white' asp-action="Index" asp-controller="MDProceso_VehiculoView">Regresar</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var id = $("#id_provehi2").val();
+        $('#tbldetvehi').DataTable({
+            "ajax": {
+            "url": "/api/SVMDProceso_VehiculoDetalle/" + id,
+            "dataSrc": ""
+            },
+            "pageLength": 15,
+             "language": {
+                "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                "zeroRecords": "No se encontraron registros",
+                "info": "Mostrar pagina _PAGE_ de _PAGES_",
+                "infoEmpty": "No se encontraron registros",
+                "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                "search": "Buscar:",
+                "paginate": {
+                    "next": "siguiente",
+                    "previous": "Anterior"
+                }
+            },
+            "scrollX": true,
+            "responsive": true,
+            "columns": [
+                { data: 'id_provehidet', "visible": false },
+                { data: 'id_provehi', "visible": false },
+                { data: 'id_estad', "visible": false },
+                { data: 'proces_desc' },
+                { data: 'estad_desc' },
+                { data: 'provehidet_fecini' },
+                { data: 'provehidet_fecfin' },
+                {
+                    data: "id", render: function (data, type, row, meta) {
+                        return "<button class='btn-md btn-primary' onclick='Edit(" + JSON.stringify(row) + ")'>Editar</button>";
+                    }
+                }
+            ]
+        });
+
+        $("#btnsave").click(function() {          
+            var provehidet_fecini = $("#provehidet_fecini").val();
+            var provehidet_fecfin = $("#provehidet_fecfin").val();
+
+            if(provehidet_fecini === '' || provehidet_fecfin === ''){
+					swal('Mensaje de advertencia', 'Complete los campos requeridos', 'error');
+			}
+            else{
+                var origin = $(location).attr('origin');
+                var url = origin + '/api/SVMDProceso_VehiculoDetalle'
+                var mProvehidet = {
+                    id_provehidet: $.trim($("#id_provehidet").val()) == "" ? 0 : $("#id_provehidet").val(),
+                    id_provehi: $.trim($("#id_provehi").val()) == "" ? 0 : $("#id_provehi").val(),
+                    id_estad: $.trim($("#id_estad").val()) == "" ? 0 : $("#id_estad").val(),
+                    provehidet_fecini: $("#provehidet_fecini").val(),
+                    provehidet_fecfin: $("#provehidet_fecfin").val()
+                };
+                $.post( url, { mProvehidet : mProvehidet })
+                .done(function (data) {
+                    Reset();
+                    ReloadGrid();
+                    swal('Mensaje de confirmacion', 'Registro Grabado', 'success');
+                });
+            }          
+        });
+    });
+
+    function Edit(oDetvechi) {
+        $("#id_provehidet").val(oDetvechi.id_provehidet);
+        $("#id_provehi").val(oDetvechi.id_provehi);
+        $("#id_estad").val(oDetvechi.id_estad);
+        $("#proces_desc").val(oDetvechi.proces_desc);
+        $("#estad_desc").val(oDetvechi.estad_desc);
+        $("#provehidet_fecini").val(oDetvechi.provehidet_fecini);
+        $("#provehidet_fecfin").val(oDetvechi.provehidet_fecfin);
+    }
+
+    function Reset() {
+        $("#id_provehidet").val(0);
+        $("#id_provehi").val(0);
+        $("#id_estad").val(0);
+        $("#proces_desc").val("");
+        $("#estad_desc").val("");
+        $("#provehidet_fecini").val("");
+        $("#provehidet_fecfin").val("");
+
+    }
+
+    function ReloadGrid() {
+        $("#tbldetvehi").DataTable().clear();
+        $("#tbldetvehi").DataTable().ajax.reload();
+    }
+
+</script>
+}

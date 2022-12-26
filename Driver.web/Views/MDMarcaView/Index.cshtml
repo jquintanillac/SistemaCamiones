@@ -1,0 +1,179 @@
+﻿@{
+	ViewData["Title"] = "Marcas";
+	 Layout="~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+</head>
+
+<br />
+<div class="container-fluid">
+	<div class="card">
+		<div class="card-header">
+			 <div class="div-title">
+				<h3 class="text-center">MARCAS</h3>
+			 </div>
+			 <hr />
+			 <br />		
+			 <div class="container-fluid">  
+				 <div class="row">
+					 <input type="hidden" id="id_marca" value=""  />	
+					 <div class="form-group col">
+						<label class="control-label">(*) Descripcion: </label>
+						<input id="marca_desc" placeholder="Descripcion marca" class="form-control" />						
+					</div>
+					<div class="form-group col">
+						<label class="control-label">(*) Codigo: </label>
+						<input id="marca_cod" placeholder="Codigo marca" class="form-control" />						
+					</div>
+				 </div>
+				 <div class="row">
+					<div class="col-md-1"></div>
+					<div class="col-md-3" >
+						<div class="form-group form-check">
+							<input type="checkbox" class="form-check-input" id="marca_act" checked="checked" >
+							<label class="form-check-label">Activo</label>					
+						</div>
+					</div>											    
+				 </div>	
+				 <div class="row">
+					 <div class="col-md-6">
+						<button id="btnsave" class="btn btn-success btn-sm">Guardar</button>
+						<button id="btnAddnew" class="btn btn-primary btn-sm">Limpiar Datos</button>	
+					</div>	
+				 </div>
+				 <br />
+				 <div class="row">
+					 <div class="col-md-6">
+						<h6><label>Campos obligatorios(*)</label></h6>
+					</div>	
+				 </div>
+			 </div>
+		</div>
+	<div class="card-body">
+			<table id="tblmarca" class="table table-striped table-bordered" style="width: 100%">
+				<thead>
+					<tr>
+						<th class="d-none">ID</th>
+						<th>Descripcion</th>
+						<th>Codigo</th>
+						<th>Activo</th>
+						<th>Accciones</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts {
+	<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$('#tblmarca').DataTable({
+				"ajax": {
+				"url": "/api/SVMDMarca",
+				"dataSrc": ""				
+				},
+				"pageLength": 15,
+				 "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontraron registros",
+                    "info": "Mostrar pagina _PAGE_ de _PAGES_",
+                    "infoEmpty": "No se encontraron registros",
+                    "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "next": "siguiente",
+                        "previous": "Anterior"
+                    }
+				},
+                "scrollX": true,
+                "responsive": true,								
+				"columns": [
+					{ data: 'id_marca', "visible": false },
+					{ data: 'marca_desc' },
+					{ data: 'marca_cod' },
+					{ data: 'marca_act',
+						"render": function (data, type, row){
+							if (row.marca_act === true) { return 'Activo';	}
+							else { return 'Inactivo'; }					
+						} 						
+					},
+					{
+						data: "id", render: function (data, type, row, meta) {
+							return "<button class='btn-md btn-primary' onclick='Edit(" + JSON.stringify(row) + ")'>Editar</button>" +
+								   "<button class='btn-md btn-danger'  onclick='Delete(" + JSON.stringify(row) + ")'>Eliminar</button>";
+						}
+					}
+				]
+			});
+
+			$("#btnsave").click(function() {
+
+				var marca_desc = $("#marca_desc").val();
+				var	marca_cod = $("#marca_cod").val();
+
+				if(marca_desc === '' || marca_cod === ''){
+					swal('Mensaje de advertencia', 'Complete los campos requeridos', 'error');
+				}
+                else{
+					var mDMarca = {
+						id_marca: $.trim($("#id_marca").val()) == "" ? 0 : $("#id_marca").val(),  
+						marca_desc: $("#marca_desc").val(),
+						marca_cod: $("#marca_cod").val(),
+						marca_act: $("#marca_act").prop("checked") ? true : false				
+					};
+				
+					$.post("api/SVMDMarca", { mDMarca : mDMarca })
+					.done(function (data) {
+						Reset();
+						ReloadGrid();
+						swal('Mensaje de confirmacion', 'Registro Grabado', 'success');
+					});
+				}				
+			});
+
+			$("#btnAddnew").click(function(){
+				Reset();
+			});
+		});
+
+		function Edit(oMarca) {
+			$("#id_marca").val(oMarca.id_marca);
+			$("#marca_desc").val(oMarca.marca_desc);
+			$("#marca_cod").val(oMarca.marca_cod);
+			$("#marca_act").val(oMarca.marca_act);
+		}
+
+		function Delete(oMarca) {
+			var id = oMarca.id_marca;		
+			$.ajax({
+				url: "api/SVMDMarca/" + id,
+				type: "DELETE",
+				success: function(result){										 
+					 swal('Mensaje de confirmacion', 'Carga eliminada', 'success');
+					 ReloadGrid();
+				}
+			});											
+		}
+
+		function Reset() {
+			$("#id_marca").val(0);
+			$("#marca_desc").val("");
+			$("#marca_cod").val("");
+			
+		}
+		function ReloadGrid() {
+			$("#tblmarca").DataTable().clear();
+			$("#tblmarca").DataTable().ajax.reload();
+		}
+
+	</script>
+}

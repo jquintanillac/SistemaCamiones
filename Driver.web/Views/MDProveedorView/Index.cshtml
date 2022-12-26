@@ -1,0 +1,234 @@
+﻿@{
+	ViewData["Title"] = "Proveedor";
+	 Layout="~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+
+<br />
+<div class="container-fluid">
+	<div class="card">
+		<div class="card-header">
+			 <div class="div-title">
+				<h3 class="text-center">PROVEEDOR</h3>
+			 </div>
+			 <hr />
+			 <br />		
+			 <div class="container-fluid">  
+				  <div class="row">
+					 <input type="hidden" id="id_proveedor" value=""  />					
+					 <div class="form-group col">
+						<label class="control-label">(*) Razon Social: </label>
+						<input id="prover_razsocial" placeholder="Razon Social" class="form-control" />						
+					</div>
+				 </div>
+				 <div class="row">
+					<div class="form-group col">
+						<label class="control-label">(*) Tipo documento: </label>
+						<select class="form-control" id="id_tipdoc" asp-items="@(new SelectList(ViewBag.tipdoc, "id_tipdoc", "tipdoc_desc"))">
+                            <option>Seleccione documento</option>
+                        </select>					
+					</div>
+					<div class="form-group col">
+						<label class="control-label">(*) RUC: </label>
+						<input id="prover_dociden" placeholder="Nro. de documento identidad" class="form-control" />						
+					</div>														    
+				 </div>
+				 <div class="row">
+					 <div class="form-group col">
+						<label class="control-label">(*) Producto: </label>
+						<input id="prover_producto" placeholder="Ingrese producto" class="form-control" />						
+					</div>	
+					 <div class="form-group col">
+						<label class="control-label">(*) Condicion de pago: </label>
+						<input id="prover_condpago" placeholder="Ingrese condicion de pago" class="form-control" />						
+					</div>	
+				 </div>
+				 <div class="row">
+					 <div class="form-group col">
+						<label class="control-label">(*) Direccion: </label>
+						<input id="prover_direccion" placeholder="Ingrese direccion" class="form-control" />						
+					</div>					
+				 </div>
+				 <div class="row">
+					<div class="col-md-1"></div>
+					<div class="col-md-3" >
+						<div class="form-group form-check">
+							<input type="checkbox" class="form-check-input" id="prover_act" checked="checked" >
+							<label class="form-check-label" >Activo</label>					
+						</div>
+					</div>											    
+				 </div>	
+				 <div class="row">
+					 <div class="col-md-6">
+						<button id="btnsave" class="btn btn-success btn-sm">Guardar</button>
+						<button id="btnAddnew" class="btn btn-primary btn-sm">Limpiar Datos</button>	
+					</div>	
+				 </div>
+				 <br />
+				 <div class="row">
+					 <div class="col-md-6">
+						<h6><label>Campos obligatorios(*)</label></h6>
+					</div>	
+				 </div>
+			 </div>
+		</div>
+	<div class="card-body">
+			<table id="tblprov" class="table table-striped table-bordered" style="width: 100%">
+				<thead>
+					<tr>
+						<th class="d-none">ID</th>
+						<th class="d-none">Tipdoc</th>
+						<th>Razon Social</th>
+						<th>RUC</th>
+						<th>Producto</th>
+						<th>Condicion de pago</th>
+						<th>Direccion</th>
+						<th>Activo</th>
+						<th>Accciones</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts {
+	<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$(function () {
+				$("#id_tipdoc").select2({
+
+				});
+			});
+
+
+			$('#tblprov').DataTable({
+				"ajax": {
+				"url": "/api/SVMDProveedor",
+				"dataSrc": ""				
+				},
+				"pageLength": 15,
+				 "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontraron registros",
+                    "info": "Mostrar pagina _PAGE_ de _PAGES_",
+                    "infoEmpty": "No se encontraron registros",
+                    "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "next": "siguiente",
+                        "previous": "Anterior"
+                    }
+				},
+                "scrollX": true,
+                "responsive": true,								
+				"columns": [
+					{ data: 'id_proveedor', "visible": false },
+					{ data: 'id_tipdoc', "visible": false },
+					{ data: 'prover_razsocial' },
+					{ data: 'prover_dociden' },
+					{ data: 'prover_producto' },
+					{ data: 'prover_condpago' },
+					{ data: 'prover_direccion' },					
+					{ data: 'prover_act', 
+								"render": function (data, type, row){
+									if (row.prover_act === true) { return 'Activo';	}
+									else { return 'Inactivo'; }					
+								}	 	 
+					},
+					{
+						data: "id", render: function (data, type, row, meta) {
+							return "<button class='btn-md btn-primary' onclick='Edit(" + JSON.stringify(row) + ")'>Editar</button>" +
+								   "<button class='btn-md btn-danger'  onclick='Delete(" + JSON.stringify(row) + ")'>Eliminar</button>";
+						}
+					}
+				]
+			});
+
+			$("#btnsave").click(function() {
+
+				var	id_tipdoc = $("#id_tipdoc").val();
+				var	prover_razsocial = $("#prover_razsocial").val();
+				var	prover_dociden = $("#prover_dociden").val();
+				var	prover_producto = $("#prover_producto").val();
+				var	prover_condpago = $("#prover_condpago").val();	
+				var	prover_direccion = $("#prover_direccion").val();	
+
+				if(id_tipdoc === 'Seleccione documento' || prover_razsocial === '' || prover_dociden === '' || prover_producto === '' || prover_condpago === '' || prover_direccion === ''){
+					swal('Mensaje de advertencia', 'Complete los campos requeridos', 'error');
+				}
+				else{
+					var mDProveedor = {
+						id_proveedor: $.trim($("#id_proveedor").val()) == "" ? 0 : $("#id_proveedor").val(),  
+						id_tipdoc: $("#id_tipdoc").val(),
+						prover_razsocial: $("#prover_razsocial").val(),
+						prover_dociden: $("#prover_dociden").val(),
+						prover_producto: $("#prover_producto").val(),
+						prover_condpago: $("#prover_condpago").val(),	
+						prover_direccion: $("#prover_direccion").val(),	
+						prover_act: $("#prover_act").prop("checked") ? true : false				
+					};
+				
+					$.post("api/SVMDProveedor", { mDProveedor : mDProveedor })
+					.done(function (data) {
+						Reset();
+						ReloadGrid();
+						swal('Mensaje de confirmacion', 'Registro Grabado', 'success');
+					});
+				}				
+			});
+
+			$("#btnAddnew").click(function(){
+				Reset();
+			});
+		});
+
+		function Edit(oProver) {
+			$("#id_proveedor").val(oProver.id_proveedor);			
+			$("#prover_razsocial").val(oProver.prover_razsocial);
+			$("#prover_dociden").val(oProver.prover_dociden);
+			$("#prover_producto").val(oProver.prover_producto);
+			$("#prover_condpago").val(oProver.prover_condpago);
+			$("#prover_direccion").val(oProver.prover_direccion);
+			$("#prover_act").val(oProver.prover_act);
+		}
+
+		function Delete(oProver) {
+			var id = oProver.id_carga;		
+			$.ajax({
+				url: "api/SVMDProveedor/" + id,
+				type: "DELETE",
+				success: function(result){										 
+					 swal('Mensaje de confirmacion', 'Carga eliminada', 'success');
+					 ReloadGrid();
+				}
+			});											
+		}
+
+		function Reset() {
+			$("#id_proveedor").val(0);			
+			$("#prover_razsocial").val("");
+			$("#prover_dociden").val("");
+			$("#prover_producto").val("");
+			$("#prover_condpago").val("");
+			$("#prover_direccion").val("");
+			
+		}
+		function ReloadGrid() {
+			$("#tblprov").DataTable().clear();
+			$("#tblprov").DataTable().ajax.reload();
+		}
+
+	</script>
+}

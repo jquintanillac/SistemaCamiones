@@ -1,0 +1,115 @@
+﻿@model Driver.web.Data.Entities.MDUsuario
+<!DOCTYPE html>
+@{ Layout = null; }
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Flota Camiones</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="~/RoyalUI-Admin-master/vendors/ti-icons/css/themify-icons.css">
+    <link rel="stylesheet" href="~/RoyalUI-Admin-master/vendors/base/vendor.bundle.base.css">
+    <!-- endinject -->
+    <!-- plugin css for this page -->
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="~/RoyalUI-Admin-master/css/style.css">
+    <!-- endinject -->
+    <link rel="shortcut icon" href="~/RoyalUI-Admin-master/images/favicon.png" />    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<br />
+<!--Validacion para desplegar Mensaje despues del POST-->
+@if (TempData["success"] != null)
+{
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <strong>Mensaje: </strong> @Html.Encode(TempData["success"])
+    <a href="#" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+    </a>
+</div>}
+@if (TempData["error"] != null)
+{
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <strong>Mensaje: </strong> @Html.Encode(TempData["Error"])
+    <a href="#" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+    </a>
+</div>}
+<body>
+    <div class="container-scroller">
+        <div class="container-fluid page-body-wrapper full-page-wrapper">
+            <div class="content-wrapper d-flex align-items-stretch auth auth-img-bg">
+                <div class="row flex-grow">
+                    <div class="col-lg-6 d-flex align-items-center justify-content-center">
+                        <div class="auth-form-transparent text-left p-3">
+                            <div class="brand-logo">
+                                <img src="~/RoyalUI-Admin-master/images/logodeflp.jpeg" alt="logo">
+                            </div>
+                            <h4>¡BIENVENIDO!</h4>
+                            <h6 class="font-weight-light">Flota de Camiones</h6>
+                            <form class="pt-3" asp-action="Login" asp-controller="Home" method="post" id="login">
+                                <div class="form-group">
+                                    <label for="exampleInputEmail">Usuario</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend bg-transparent">
+                                            <span class="input-group-text bg-transparent border-right-0">
+                                                <i class="ti-user text-primary"></i>
+                                            </span>
+                                        </div>
+                                        <input asp-for="Usua_user" type="text" class="form-control form-control-lg border-left-0" placeholder="Usuario">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputPassword">Contraseña</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend bg-transparent">
+                                            <span class="input-group-text bg-transparent border-right-0">
+                                                <i class="ti-lock text-primary"></i>
+                                            </span>
+                                        </div>
+                                        <input asp-for="Usua_pass" type="password" class="form-control form-control-lg border-left-0" placeholder="Contraseña">
+                                    </div>
+                                </div>
+                                <div class="my-2 d-flex justify-content-between align-items-center">
+                                    <a href="#" class="auth-link text-black">Olvidaste tu contraseña?</a>
+                                </div>
+                                <div class="my-3">
+                                    <button type="submit" class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">INGRESAR</button>
+                                </div>
+                                @*<div class="mb-2 d-flex">
+                                        <button type="button" class="btn btn-facebook auth-form-btn flex-grow mr-1">
+                                            <i class="ti-facebook mr-2"></i>Facebook
+                                        </button>
+                                        <button type="button" class="btn btn-google auth-form-btn flex-grow ml-1">
+                                            <i class="ti-google mr-2"></i>Google
+                                        </button>
+                                    </div>*@
+                                <div class="text-center mt-4 font-weight-light">
+                                    <a asp-controller="Home" asp-action="Registro" class="text-primary">Crear cuenta</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 login-half-bg d-flex flex-row">
+                        <p class="text-white font-weight-medium text-center flex-grow align-self-end">Copyright &copy; 2021 todos los derechos reservados.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- content-wrapper ends -->
+        </div>
+        <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+    <script src="../../vendors/base/vendor.bundle.base.js"></script>
+    <!-- endinject -->
+    <!-- inject:js -->
+    <script src="~/RoyalUI-Admin-master/js/off-canvas.js"></script>
+    <script src="~/RoyalUI-Admin-master/js/hoverable-collapse.js"></script>
+    <script src="~/RoyalUI-Admin-master/js/template.js"></script>
+    <script src="~/RoyalUI-Admin-master/js/todolist.js"></script>
+    <!-- endinject -->
+</body>

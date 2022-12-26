@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "fLxL2CVZ60tqlauGJC4FW4kl0Sl5RTOBlxwZf778LuSsHxQeLcafRkVViO8Up0nF9qpwZcM8iXFhG2/5iulmBA==",
+  "success": true,
+  "projectFilePath": "D:\\Proyectos Personales\\Camiones\\Driver\\Driver.common\\Driver.common.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\jquintanillac\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\5.0.0\\microsoft.aspnetcore.app.ref.5.0.0.nupkg.sha512",
+    "C:\\Users\\jquintanillac\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\5.0.0\\microsoft.windowsdesktop.app.ref.5.0.0.nupkg.sha512",
+    "C:\\Users\\jquintanillac\\.nuget\\packages\\microsoft.netcore.app.ref\\5.0.0\\microsoft.netcore.app.ref.5.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,185 @@
+﻿@{
+	ViewData["Title"] = "Cargas";
+	 Layout="~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+</head>
+
+<br />
+<div class="container-fluid">
+	<div class="card">
+		<div class="card-header">
+			 <div class="div-title">
+				<h3 class="text-center">UBIGEOS</h3>
+			 </div>
+			 <hr />
+			 <br />		
+			 <div class="container-fluid">  
+				 <div class="row">
+					 <input type="hidden" id="id_ubigeo" value=""  />	
+					 <div class="form-group col">
+						<label class="control-label">(*) Departamento: </label>
+						<input id="ubig_depa" placeholder="Departamento" class="form-control" />						
+					</div>
+					<div class="form-group col">
+						<label class="control-label">(*) Provincia: </label>
+						<input id="ubig_prov" placeholder="Provincia" class="form-control" />						
+					</div>
+				 </div>
+				 <div class="row">
+					<div class="form-group col">
+						<label class="control-label">(*) Distrito: </label>
+						<input id="ubig_dist" placeholder="Distrito" class="form-control" />						
+					</div>
+					<div class="form-group col">
+						<label class="control-label">(*) Codigo ubigeo: </label>
+						<input id="ubig_cod" placeholder="Codigo ubigeo" class="form-control" />						
+					</div>									    
+				 </div>	
+				 <div class="row">
+					 <div class="col-md-6">
+						<button id="btnsave" class="btn btn-success btn-sm">Guardar</button>
+						<button id="btnAddnew" class="btn btn-primary btn-sm">Limpiar Datos</button>	
+					</div>	
+				 </div>
+				 <br />
+				 <div class="row">
+					 <div class="col-md-6">
+						<h6><label>Campos obligatorios(*)</label></h6>
+					</div>	
+				 </div>
+			 </div>
+		</div>
+		<div class="card-body">
+			<table id="tblubigeo" class="table table-striped table-bordered" style="width: 100%">
+				<thead>
+					<tr>
+						<th class="d-none">ID</th>
+						<th>Departamento</th>
+						<th>Provincia</th>
+						<th>Distrito</th>
+						<th>Ubigeo</th>
+						<th>Descripcion</th>
+						<th>Accciones</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts {
+	<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$('#tblubigeo').DataTable({
+				"ajax": {
+				"url": "/api/SVMDUbigeo",
+				"dataSrc": ""				
+				},
+				"pageLength": 15,
+				 "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontraron registros",
+                    "info": "Mostrar pagina _PAGE_ de _PAGES_",
+                    "infoEmpty": "No se encontraron registros",
+                    "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "next": "siguiente",
+                        "previous": "Anterior"
+                    }
+				},
+                "scrollX": true,
+                "responsive": true,								
+				"columns": [
+					{ data: 'id_ubigeo', "visible": false },
+					{ data: 'ubig_depa' },
+					{ data: 'ubig_prov' },
+					{ data: 'ubig_dist' },
+					{ data: 'ubig_cod' },
+					{ data: 'ubig_desc' },
+					{
+						data: "id", render: function (data, type, row, meta) {
+							return "<button class='btn-md btn-primary' onclick='Edit(" + JSON.stringify(row) + ")'>Editar</button>" +
+								   "<button class='btn-md btn-danger'  onclick='Delete(" + JSON.stringify(row) + ")'>Eliminar</button>";
+						}
+					}
+				]
+			});
+
+			$("#btnsave").click(function() {
+
+				var ubig_depa = $("#ubig_depa").val();
+				var ubig_prov = $("#ubig_prov").val();
+				var ubig_dist = $("#ubig_dist").val();
+				var ubig_cod = $("#ubig_cod").val();
+
+				if(ubig_depa === '' || ubig_prov === '' || ubig_dist === '' || ubig_cod === ''){
+					swal('Mensaje de advertencia', 'Complete los campos requeridos', 'error');
+				}
+				else{
+					var mDUbigeo = {
+						id_ubigeo: $.trim($("#id_ubigeo").val()) == "" ? 0 : $("#id_ubigeo").val(),  
+						ubig_depa: $("#ubig_depa").val(),
+						ubig_prov: $("#ubig_prov").val(),
+						ubig_dist: $("#ubig_dist").val(),
+						ubig_cod: $("#ubig_cod").val()
+					};
+				
+					$.post("api/SVMDUbigeo", { mDUbigeo : mDUbigeo })
+					.done(function (data) {
+						Reset();
+						ReloadGrid();
+						swal('Mensaje de confirmacion', 'Registro Grabado', 'success');
+					});
+				}			
+			});
+
+			$("#btnAddnew").click(function(){
+				Reset();
+			});
+		});
+
+		function Edit(oUbigeo) {
+			$("#id_ubigeo").val(oUbigeo.id_ubigeo);
+			$("#ubig_depa").val(oUbigeo.ubig_depa);
+			$("#ubig_prov").val(oUbigeo.ubig_prov);
+			$("#ubig_dist").val(oUbigeo.ubig_dist);
+			$("#ubig_cod").val(oUbigeo.ubig_cod);
+		}
+
+		function Delete(oUbigeo) {
+			var id = oUbigeo.id_ubigeo;		
+			$.ajax({
+				url: "api/SVMDUbigeo/" + id,
+				type: "DELETE",
+				success: function(result){										 
+					 swal('Mensaje de confirmacion', 'Carga eliminada', 'success');
+					 ReloadGrid();
+				}
+			});											
+		}
+
+		function Reset() {
+			$("#id_ubigeo").val(0);
+			$("#ubig_depa").val("");
+			$("#ubig_prov").val("");
+			$("#ubig_dist").val("");
+			$("#ubig_cod").val("");
+			
+		}
+		function ReloadGrid() {
+			$("#tblubigeo").DataTable().clear();
+			$("#tblubigeo").DataTable().ajax.reload();
+		}
+
+	</script>
+}

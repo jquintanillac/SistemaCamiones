@@ -1,0 +1,160 @@
+﻿@{
+	ViewData["Title"] = "Especialidad";
+	 Layout="~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+</head>
+
+<br />
+<div class="container-fluid">
+	<div class="card">
+		<div class="card-header">
+			 <div class="div-title">
+				<h3 class="text-center">ESPECIALIDAD</h3>
+			 </div>
+			 <hr />
+			 <br />		
+			 <div class="container-fluid">  
+				 <div class="row">
+					 <input type="hidden" id="id_espec" value=""  />	
+					 <div class="form-group col">
+						<label class="control-label">(*) Descripcion: </label>
+						<input id="espec_desc" placeholder="Descripcion" class="form-control" />						
+					</div>
+					<div class="form-group col">
+						<label class="control-label">(*) Codigo: </label>
+						<input id="espec_cod" placeholder="Codigo" class="form-control" />						
+					</div>
+				 </div>			
+				 <div class="row">
+					 <div class="col-md-6">
+						<button id="btnsave" class="btn btn-success btn-sm">Guardar</button>
+						<button id="btnAddnew" class="btn btn-primary btn-sm">Limpiar Datos</button>	
+					</div>	
+				 </div>
+				 <br />
+                 <div class="row">
+					 <div class="col-md-6">
+						<h6><label>Campos obligatorios(*)</label></h6>
+					</div>	
+				 </div>
+			 </div>
+		</div>
+	<div class="card-body">
+			<table id="tblespec" class="table table-striped table-bordered" style="width: 100%">
+				<thead>
+					<tr>
+						<th class="d-none">ID</th>
+						<th>Descripcion</th>
+						<th>Codigo</th>
+						<th>Accciones</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts {
+	<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$('#tblespec').DataTable({
+				"ajax": {
+				"url": "/api/SVMDEspecialidad",
+				"dataSrc": ""				
+				},
+				"pageLength": 15,
+				 "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontraron registros",
+                    "info": "Mostrar pagina _PAGE_ de _PAGES_",
+                    "infoEmpty": "No se encontraron registros",
+                    "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "next": "siguiente",
+                        "previous": "Anterior"
+                    }
+				},
+                "scrollX": true,
+                "responsive": true,								
+				"columns": [
+					{ data: 'id_espec', "visible": false },
+					{ data: 'espec_desc' },
+					{ data: 'espec_cod' },
+					{
+						data: "id", render: function (data, type, row, meta) {
+							return "<button class='btn-md btn-primary' onclick='Edit(" + JSON.stringify(row) + ")'>Editar</button>" +
+								   "<button class='btn-md btn-danger'  onclick='Delete(" + JSON.stringify(row) + ")'>Eliminar</button>";
+						}
+					}
+				]
+			});
+
+			$("#btnsave").click(function() {
+				var espec_desc = $("#espec_desc").val();
+				var	espec_cod = $("#espec_cod").val();	
+
+				if(espec_desc === '' || espec_cod === ''){
+					swal('Mensaje de advertencia', 'Complete los campos requeridos', 'error');
+				}
+                else{
+					var mDEspec = {
+						id_espec: $.trim($("#id_espec").val()) == "" ? 0 : $("#id_espec").val(),  
+						espec_desc: $("#espec_desc").val(),
+						espec_cod: $("#espec_cod").val()		
+					};
+				
+					$.post("api/SVMDEspecialidad", { mDEspec : mDEspec })
+					.done(function (data) {
+						Reset();
+						ReloadGrid();
+						swal('Mensaje de confirmacion', 'Registro Grabado', 'success');
+					});
+				}				
+			});
+
+			$("#btnAddnew").click(function(){
+				Reset();
+			});
+		});
+
+		function Edit(oEspec) {
+			$("#id_espec").val(oEspec.id_espec);
+			$("#espec_desc").val(oEspec.espec_desc);
+			$("#espec_cod").val(oEspec.espec_cod);
+		}
+
+		function Delete(oEspec) {
+			var id = oEspec.id_espec;		
+			$.ajax({
+				url: "api/SVMDEspecialidad/" + id,
+				type: "DELETE",
+				success: function(result){										 
+					 swal('Mensaje de confirmacion', 'Carga eliminada', 'success');
+					 ReloadGrid();
+				}
+			});											
+		}
+
+		function Reset() {
+			$("#id_espec").val(0);
+			$("#espec_desc").val("");
+			$("#espec_cod").val("");
+			
+		}
+		function ReloadGrid() {
+			$("#tblespec").DataTable().clear();
+			$("#tblespec").DataTable().ajax.reload();
+		}
+
+	</script>
+}

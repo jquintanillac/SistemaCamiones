@@ -1,0 +1,339 @@
+﻿@{
+	ViewData["Title"] = "Viajes";
+	 Layout="~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+
+<br />
+<div class="container-fluid">
+	<div class="card">
+		<div class="card-header">
+			 <div class="div-title">
+				<h3 class="text-center">REGISTRAR VIAJE</h3>
+			 </div>
+			 <hr />
+			 <br />		
+			 <div class="container-fluid">
+				 <div class="row">
+					<input type="hidden" id="id_servcab" value=""  />	
+                    <div class="form-group col">
+                        <label class="control-label">(*) Nro viaje: </label>
+                        <input id="servcab_nro" class="form-control" value="@ViewData["Nroviaje"]" readonly />
+                    </div>
+					 <div class="form-group col">
+                        <label class="control-label">(*) Fecha viaje: </label>
+                        <input id="servcab_fec" type="date" class="form-control" />
+                    </div>
+				 </div>
+				 <div class="row">			
+					<div class="form-group col">
+                        <label class="control-label">(*) Descripcion viaje: </label>
+                        <input id="servcab_desc" class="form-control" />
+                    </div>					
+				 </div>
+				 <div class="row">					
+					 <div class="form-group col">
+						<input type="hidden" id="id_servclie" value=""  />	
+                        <label class="control-label">(*) Cliente: </label>
+                        <select class="form-control id_cliente" id="id_cliente" asp-items="@(new SelectList(ViewBag.cliente, "id_cliente", "clie_razsocial"))">
+                            <option>Seleccione cliente</option>
+                        </select>
+                    </div>
+					<div class="form-group col">
+						<input type="hidden" id="id_servcarg" value=""  />	
+                        <label class="control-label">(*) Carga: </label>
+                        <select class="form-control id_carga" id="id_carga" asp-items="@(new SelectList(ViewBag.carga, "id_carga", "carg_desc"))">
+                            <option>Seleccione carga</option>
+                        </select>
+                    </div>		
+				 </div>
+				 <div class="row">
+					<div class="form-group col">
+						<input type="hidden" id="id_servorg" value=""  />	
+                        <label class="control-label">(*) Origen: </label>
+                        <select class="form-control id_ubigeo_partida" id="id_ubigeo_partida" asp-items="@(new SelectList(ViewBag.origen, "id_ubigeo", "ubig_desc"))">
+                            <option>Seleccione origen</option>
+                        </select>
+                    </div>
+					<div class="form-group col">
+						<input type="hidden" id="id_servdest" value=""  />	
+                        <label class="control-label">(*) Destino: </label>
+                        <select class="form-control id_ubigeo_llegada" id="id_ubigeo_llegada" asp-items="@(new SelectList(ViewBag.destino, "id_ubigeo", "ubig_desc"))">
+                            <option>Seleccione destino</option>
+                        </select>
+                    </div>		
+				 </div>	
+				 <div class="row">
+                    <div class="form-group col">
+                        <label class="control-label">(*) Cantidad Total: </label>
+                        <input id="servcab_canttotal" placeholder="Ingrese Monto Total" class="form-control" />
+                    </div>
+					<div class="form-group col">
+                        <label class="control-label">(*) KM a recorrer: </label>
+                        <input id="servcab_km" placeholder="Ingrese km" class="form-control" />
+                    </div>
+				 </div>
+				 <div class="row">
+                    <div class="form-group col">
+                        <label class="control-label">(*) Monto Total: </label>
+                        <input id="servcab_montotal" placeholder="Ingrese Monto Total" class="form-control" />
+                    </div>
+					<div class="form-group col">
+                        <label class="control-label">Observacion: </label>
+                        <input id="servcab_obs" placeholder="Ingrese observacion" class="form-control" />
+                    </div>
+				 </div>
+				 <div class="row">
+					<div class="form-group col">
+						<input type="hidden" id="id_servdest" value=""  />	
+                        <label class="control-label">(*) Estado viaje: </label>
+                        <select class="form-control id_tipserv" id="id_tipserv" asp-items="@(new SelectList(ViewBag.estado, "id_tipserv", "tipserv_descr"))">
+                            <option>Seleccione Estado</option>
+                        </select>
+                    </div>		
+                    <div class="form-group col">
+                        <label class="control-label">(*) Nro. Guia: </label>
+                        <input id="servcab_guia" placeholder="Ingrese Nro. Guia" class="form-control" />
+                    </div>				
+				 </div>
+				 <div class="row">
+					 <div class="col-md-6">
+						<button id="btnsave" class="btn btn-success btn-sm" style="margin-right:5px">Guardar</button>
+						<button id="btnAddnew" class="btn btn-primary btn-sm"  style="margin-right:5px">Limpiar Datos</button>	
+					</div>	
+				 </div>
+				 <br />
+				 <div class="row">
+					 <div class="col-md-6">
+						<h6><label>Campos obligatorios(*)</label></h6>
+					</div>	
+				 </div>
+			 </div>
+		</div>
+	<div class="card-body">
+			<table id="tblviaje" class="table table-striped table-bordered" style="width: 100%">
+				<thead>
+					<tr>
+						<th class="d-none">id_servcab</th>
+						<th class="d-none">id_cliente</th>
+						<th class="d-none">id_carga</th>
+						<th class="d-none">id_ubigeo_partida</th>
+						<th class="d-none">id_ubigeo_llegada</th>
+						<th class="d-none">id_tipserv</th>
+						<th>Nro. Viaje</th>
+						<th>Cliente</th>
+						<th>Carga</th>
+						<th>Origen</th>
+						<th>Destino</th>
+						<th>Estado</th>
+						<th>Nro. Guia</th>
+						<th>Descripcion</th>
+						<th>Fecha</th>
+						<th>Cantidad</th>
+						<th>Monto Total</th>
+						<th>KM</th>
+						<th>Observacion</th>
+						<th>Accciones</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts {
+	<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css"></script>	
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {			
+			$(function () {
+				$("#id_cliente").select2({
+
+				});
+				$("#id_carga").select2({
+
+				});
+				$("#id_ubigeo_partida").select2({
+
+				});
+				$("#id_ubigeo_llegada").select2({
+
+				});
+				$("#id_tipserv").select2({
+
+				});
+			});		
+
+			$('#tblviaje').DataTable({
+				"ajax": {
+				"url": "/api/SVMDServicio_Cabecera",
+				"dataSrc": ""				
+				},
+				"pageLength": 15,
+				 "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontraron registros",
+                    "info": "Mostrar pagina _PAGE_ de _PAGES_",
+                    "infoEmpty": "No se encontraron registros",
+                    "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "next": "siguiente",
+                        "previous": "Anterior"
+                    }
+				},
+                "scrollX": true,
+                "responsive": true,								
+				"columns": [
+					{ data: 'id_servcab', "visible": false },
+					{ data: 'id_cliente', "visible": false },
+					{ data: 'id_carga', "visible": false },
+					{ data: 'id_ubigeo_partida', "visible": false },
+					{ data: 'id_ubigeo_llegada', "visible": false },
+					{ data: 'id_tipserv', "visible": false },
+					{ data: 'servcab_nro' },
+					{ data: 'clie_razsocial' },
+					{ data: 'carg_desc' },
+					{ data: 'ubig_origen' },
+					{ data: 'ubig_llegada' },
+					{ data: 'tipserv_descr' },
+					{ data: 'servcab_guia' },
+					{ data: 'servcab_desc' },
+					{ data: 'servcab_fec' },
+					{ data: 'servcab_canttotal' },
+					{ data: 'servcab_montotal' },
+					{ data: 'servcab_km' },
+					{ data: 'servcab_obs' },
+					{
+						data: "id", render: function (data, type, row, meta) {
+							return "<button class='btn-md btn-primary' onclick='Add(" + JSON.stringify(row) + ")'>Agregar</button>" +
+								   "<button class='btn-md btn-danger'  onclick='Delete(" + JSON.stringify(row) + ")'>Eliminar</button>";
+						}
+					}
+				]
+			});
+
+			$("#btnsave").click(function() {
+
+				var id_cliente = $.trim($("#id_cliente").val()) == "" ? 0 : $("#id_cliente").val();  
+				var	id_carga = $.trim($("#id_carga").val()) == "" ? 0 : $("#id_carga").val();
+				var	id_ubigeo_partida = $.trim($("#id_ubigeo_partida").val()) == "" ? 0 : $("#id_ubigeo_partida").val();
+				var	id_ubigeo_llegada = $.trim($("#id_ubigeo_llegada").val()) == "" ? 0 : $("#id_ubigeo_llegada").val(); 
+				var	id_tipserv = $.trim($("#id_tipserv").val()) == "" ? 0 : $("#id_tipserv").val();
+				var	tipserv_descr = $("#tipserv_descr").val();		
+				var	servcab_guia = $("#servcab_guia").val();		
+				var	servcab_nro = $("#servcab_nro").val();		
+				var	servcab_desc = $("#servcab_desc").val();
+				var	servcab_fec = $("#servcab_fec").val();
+				var	servcab_canttotal = $("#servcab_canttotal").val();
+				var	servcab_montotal = $("#servcab_montotal").val();
+				var	servcab_km = $("#servcab_km").val();
+
+				if(id_cliente === 'Seleccione producto' || id_carga === 'Seleccione vehiculo' || id_ubigeo_partida === '' || id_ubigeo_llegada === '' || servcab_nro === '' || servcab_desc === '' || servcab_fec === '' || servcab_canttotal === '' || servcab_montotal === '' || servcab_km === '' || id_tipserv === 'Seleccione Estado' || servcab_guia === ''){
+					swal('Mensaje de advertencia', 'Complete los campos requeridos', 'error');
+				}
+				else{
+					var origin = $(location).attr('origin'); 
+					var url = origin + '/api/SVMDServicio_Cabecera';
+					var mDServicio_Cabecera = {
+						id_servcab: $.trim($("#id_servcab").val()) == "" ? 0 : $("#id_servcab").val(),  
+						id_cliente: $.trim($("#id_cliente").val()) == "" ? 0 : $("#id_cliente").val(),  
+						id_carga: $.trim($("#id_carga").val()) == "" ? 0 : $("#id_carga").val(),
+						id_tipserv: $.trim($("#id_tipserv").val()) == "" ? 0 : $("#id_tipserv").val(),
+						id_ubigeo_partida: $.trim($("#id_ubigeo_partida").val()) == "" ? 0 : $("#id_ubigeo_partida").val(),  
+						id_ubigeo_llegada: $.trim($("#id_ubigeo_llegada").val()) == "" ? 0 : $("#id_ubigeo_llegada").val(),  
+						servcab_nro: $("#servcab_nro").val(),
+						clie_razsocial: "",
+						ubig_origen: "",
+						ubig_llegada: "",					
+						servcab_desc: $("#servcab_desc").val(),
+						servcab_fec: $("#servcab_fec").val(),
+						tipserv_descr: "",
+						servcab_guia: $("#servcab_guia").val(),
+						servcab_canttotal: $("#servcab_canttotal").val(),
+						servcab_montotal: $("#servcab_montotal").val(),
+						servcab_km: $("#servcab_km").val(),
+						servcab_obs: $("#servcab_obs").val()		
+					};
+				
+					$.post(url, { mDServicio_Cabecera : mDServicio_Cabecera })
+					.done(function (data) {
+						Reset();
+						ReloadGrid();
+						swal('Mensaje de confirmacion', 'Registro Grabado', 'success');
+					});
+				}			
+			});
+
+			$("#btnAddnew").click(function(){
+				Reset();
+			});		
+		});
+
+		function Edit(oServcab) {
+			$("#id_servcab").val(oServcab.id_servcab);
+			$("#id_cliente").val(oServcab.clie_razsocial);
+			$("#id_carga").val(oServcab.id_carga);
+			$("#id_ubigeo_partida").val(oServcab.ubig_origen);
+			$("#id_ubigeo_llegada").val(oServcab.ubig_llegada);
+			$("#servcab_nro").val(oServcab.servcab_nro);
+			$("#servcab_fec").val(oServcab.servcab_fec);
+			$("#servcab_canttotal").val(oServcab.servcab_canttotal);
+			$("#servcab_montotal").val(oServcab.servcab_montotal);
+			$("#servcab_km").val(oServcab.servcab_km);			
+			$("#servcab_obs").val(oServcab.servcab_obs);
+			$("#id_tipserv").val(oServcab.id_tipserv);
+			$("#servcab_guia").val(oServcab.servcab_guia);
+		}
+
+		function Add(oServcab){
+			var id = oServcab.id_servcab;		
+			var origin = $(location).attr('origin'); 
+			var url = "/MDServdetView/Index/" + id;
+		    window.location.href = url;
+		}
+
+
+		function Delete(oServcab) {
+			var id = oServcab.id_servcab;		
+			$.ajax({
+				url: "api/SVMDServicio_Cabecera/" + id,
+				type: "DELETE",
+				success: function(result){										 
+					 swal('Mensaje de confirmacion', 'Registro eliminada', 'success');
+					 ReloadGrid();
+				}
+			});											
+		}
+
+		function Reset() {
+			$("#id_servcab").val(0);
+			$("#id_cliente").val(0);
+			$("#id_carga").val(0);
+			$("#id_tipserv").val(0);
+			$("#id_ubigeo_partida").val(0);
+			$("#id_ubigeo_llegada").val(0);			
+			$("#servcab_fec").val("");
+			$("#servcab_canttotal").val(0);
+			$("#servcab_montotal").val(0);
+			$("#servcab_km").val(0);			
+			$("#servcab_obs").val("");
+			$("#servcab_guia").val("");
+			
+		}
+		function ReloadGrid() {
+			$("#tblviaje").DataTable().clear();
+			$("#tblviaje").DataTable().ajax.reload();
+		}
+
+	</script>
+}

@@ -1,0 +1,178 @@
+﻿@{
+	ViewData["Title"] = "Grifo";
+	 Layout="~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+</head>
+
+<br />
+<div class="container-fluid">
+	<div class="card">
+		<div class="card-header">
+			 <div class="div-title">
+				<h3 class="text-center">GRIFOS</h3>
+			 </div>
+			 <hr />
+			 <br />		
+			 <div class="container-fluid">  
+				 <div class="row">
+					 <input type="hidden" id="id_grifo" value=""  />	
+					 <div class="form-group col">
+						<label class="control-label">(*) Descripcion: </label>
+						<input id="grifo_descr" placeholder="Descripcion grifo" class="form-control" />						
+					</div>
+					<div class="form-group col">
+						<label class="control-label">(*) Direccion: </label>
+						<input id="grifo_direc" placeholder="Direccion grifo" class="form-control" />						
+					</div>
+				 </div>
+				 <div class="row">
+					<div class="col-md-1"></div>
+					<div class="col-md-3" >
+						<div class="form-group form-check">
+							<input type="checkbox" class="form-check-input" id="grifo_act" checked="checked" >
+							<label class="form-check-label" >Activo</label>					
+						</div>
+					</div>											    
+				 </div>	
+				 <div class="row">
+					 <div class="d-grid gap-2 d-md-block">
+						<button id="btnsave" class="btn btn-success btn-sm">Guardar</button>
+						<button id="btnAddnew" class="btn btn-primary btn-sm">Limpiar Datos</button>	
+					</div>	
+				 </div>
+				 <br />
+				 <div class="row">
+					 <div class="col-md-6">
+						<h6><label>Campos obligatorios(*)</label></h6>
+					</div>	
+				 </div>
+			 </div>
+		</div>
+	<div class="card-body">
+			<table id="tblgrifo" class="table table-striped table-bordered" style="width: 100%">
+				<thead>
+					<tr>
+						<th class="d-none">ID</th>
+						<th>Descripcion</th>
+						<th>Direccion</th>
+						<th>Activo</th>
+						<th>Accciones</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts {
+	<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$('#tblgrifo').DataTable({
+				"ajax": {
+				"url": "/api/SVMDGrifo",
+				"dataSrc": ""				
+				},
+				"pageLength": 15,
+				 "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros por pagina",
+                    "zeroRecords": "No se encontraron registros",
+                    "info": "Mostrar pagina _PAGE_ de _PAGES_",
+                    "infoEmpty": "No se encontraron registros",
+                    "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "search": "Buscar:",
+                    "paginate": {
+                        "next": "siguiente",
+                        "previous": "Anterior"
+                    }
+				},
+                "scrollX": true,
+                "responsive": true,								
+				"columns": [
+					{ data: 'id_grifo', "visible": false },
+					{ data: 'grifo_descr' },
+					{ data: 'grifo_direc' },
+					{ data: 'grifo_act',
+						"render": function (data, type, row){
+							if (row.grifo_act === true) { return 'Activo';	}
+							else { return 'Inactivo'; }					
+						} 						
+					},
+					{
+						data: "id", render: function (data, type, row, meta) {
+							return "<button class='btn-md btn-primary' onclick='Edit(" + JSON.stringify(row) + ")'>Editar</button>" +
+								   "<button class='btn-md btn-danger'  onclick='Delete(" + JSON.stringify(row) + ")'>Eliminar</button>";
+						}
+					}
+				]
+			});
+
+			$("#btnsave").click(function() {
+				var	grifo_descr = $("#grifo_descr").val();
+				var	grifo_direc = $("#grifo_direc").val();
+
+				if(grifo_descr === '' || grifo_direc === ''){
+					swal('Mensaje de advertencia', 'Complete los campos requeridos', 'error');
+				}
+                else{
+					var mDGrifo = {
+						id_grifo: $.trim($("#id_grifo").val()) == "" ? 0 : $("#id_grifo").val(),  
+						grifo_descr: $("#grifo_descr").val(),
+						grifo_direc: $("#grifo_direc").val(),
+						grifo_act: $("#grifo_act").prop("checked") ? true : false				
+					};
+				
+					$.post("api/SVMDGrifo", { mDGrifo : mDGrifo })
+					.done(function (data) {
+						Reset();
+						ReloadGrid();
+						swal('Mensaje de confirmacion', 'Registro Grabado', 'success');
+					});
+				}				
+			});
+
+			$("#btnAddnew").click(function(){
+				Reset();
+			});
+		});
+
+		function Edit(oGrifo) {
+			$("#id_grifo").val(oGrifo.id_grifo);
+			$("#grifo_descr").val(oGrifo.grifo_descr);
+			$("#grifo_direc").val(oGrifo.grifo_direc);
+			$("#grifo_act").val(oGrifo.grifo_act);
+		}
+
+		function Delete(oGrifo) {
+			var id = oGrifo.id_grifo;		
+			$.ajax({
+				url: "api/SVMDGrifo/" + id,
+				type: "DELETE",
+				success: function(result){										 
+					 swal('Mensaje de confirmacion', 'Carga eliminada', 'success');
+					 ReloadGrid();
+				}
+			});											
+		}
+
+		function Reset() {
+			$("#id_grifo").val(0);
+			$("#grifo_descr").val("");
+			$("#grifo_direc").val("");
+			
+		}
+		function ReloadGrid() {
+			$("#tblgrifo").DataTable().clear();
+			$("#tblgrifo").DataTable().ajax.reload();
+		}
+
+	</script>
+}
